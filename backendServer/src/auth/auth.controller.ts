@@ -7,9 +7,10 @@ import {
   Res,
   Get,
   UseGuards,
+  Req,
 } from "@nestjs/common";
 import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
-import { Response } from "express";
+import { Response, Request } from "express";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
@@ -33,8 +34,8 @@ export class AuthController {
     response.cookie("Authentication", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
     });
     return { user };
   }
@@ -52,8 +53,8 @@ export class AuthController {
     response.cookie("Authentication", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
     });
     return { user };
   }
@@ -76,8 +77,6 @@ export class AuthController {
   })
   @ApiResponse({ status: 401, description: "Unauthorized" })
   me(@CurrentUser() user: any) {
-    console.log(user);
-
     return { user };
   }
 }

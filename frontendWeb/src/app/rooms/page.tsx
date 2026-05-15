@@ -10,12 +10,14 @@ import { Badge } from '@/components/ui/badge';
 import { Select } from '@/components/ui/select';
 import { roomsApi, hotelsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useI18n } from '@/components/I18nProvider';
 import { Plus, Users, DollarSign, DoorOpen } from 'lucide-react';
 
 export default function RoomsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { isAuthenticated, user } = useAuthStore();
+  const { t } = useI18n();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [hotelFilter, setHotelFilter] = useState('');
 
@@ -49,11 +51,11 @@ export default function RoomsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Rooms</h1>
+        <h1 className="text-3xl font-bold">{t('rooms.title')}</h1>
         {(user?.role === 'ADMIN' || user?.role === 'HOTEL_MANAGER') && (
           <Button onClick={() => setShowCreateModal(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Add Room
+            {t('rooms.addRoom')}
           </Button>
         )}
       </div>
@@ -64,7 +66,7 @@ export default function RoomsPage() {
           value={hotelFilter}
           onChange={(e) => setHotelFilter(e.target.value)}
         >
-          <option value="">All Hotels</option>
+          <option value="">{t('rooms.allHotels')}</option>
           {hotels?.map((hotel: any) => (
             <option key={hotel.id} value={hotel.id}>
               {hotel.name}
@@ -95,20 +97,20 @@ export default function RoomsPage() {
                 <div className="space-y-3">
                   <div className="flex items-center text-sm text-muted-foreground">
                     <DoorOpen className="h-4 w-4 mr-2" />
-                    Hotel: {room.hotel?.name}
+                    {t('rooms.hotel')}: {room.hotel?.name}
                   </div>
                   <div className="flex items-center text-sm text-muted-foreground">
                     <Users className="h-4 w-4 mr-2" />
-                    Capacity: {room.capacity} guests
+                    {t('rooms.capacity')}: {room.capacity} {t('rooms.guests')}
                   </div>
                   <div className="flex items-center text-sm">
                     <DollarSign className="h-4 w-4 mr-2" />
                     <span className="font-semibold">${room.pricePerNight}</span>
-                    <span className="text-muted-foreground">/night</span>
+                    <span className="text-muted-foreground">{t('rooms.perNight')}</span>
                   </div>
                   <div className="flex items-center justify-between pt-4">
                     <Badge variant={room.availableRoomsCount > 0 ? 'success' : 'destructive'}>
-                      {room.availableRoomsCount} available
+                      {room.availableRoomsCount} {t('rooms.available')}
                     </Badge>
                     {(user?.role === 'ADMIN' || user?.role === 'HOTEL_MANAGER') && (
                       <Button
@@ -117,7 +119,7 @@ export default function RoomsPage() {
                         onClick={() => deleteMutation.mutate(room.id)}
                         disabled={deleteMutation.isPending}
                       >
-                        Delete
+                        {t('rooms.delete')}
                       </Button>
                     )}
                   </div>
