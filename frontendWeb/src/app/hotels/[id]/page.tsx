@@ -54,19 +54,25 @@ export default function HotelDetailPage() {
   const { data: hotel = { name: "" }, isLoading: hotelLoading } = useQuery<any>({
     queryKey: ["hotel", hotelId],
     queryFn: async () => {
+      console.log("Fetching hotel...", hotelId);
       const res = await hotelsApi.getById(hotelId) as any;
-      return res.data;
+      console.log("Hotel response:", res);
+      console.log("Hotel response.data:", res?.data);
+      return res?.data;
     },
-    enabled: !!hotelId && isAuthenticated,
+    enabled: true,
   });
 
   const { data: rooms = [], isLoading: roomsLoading } = useQuery<any[]>({
     queryKey: ["rooms", hotelId],
     queryFn: async () => {
+      console.log("Fetching rooms for hotel...", hotelId);
       const res = await roomsApi.getAll(hotelId) as any;
-      return Array.isArray(res) ? res : [];
+      console.log("Rooms response:", res);
+      console.log("Rooms response.data:", res?.data);
+      return Array.isArray(res?.data) ? res.data : (Array.isArray(res) ? res : []);
     },
-    enabled: !!hotelId && isAuthenticated,
+    enabled: true,
   });
 
   if (!isAuthenticated) return null;
@@ -99,7 +105,7 @@ export default function HotelDetailPage() {
     );
   }
 
-  const availableRooms = rooms.filter((r: any) => r.availableRoomsCount > 0);
+  const availableRooms = (rooms || []).filter((r: any) => r.availableRoomsCount > 0);
   const minPrice = availableRooms.length > 0 
     ? Math.min(...availableRooms.map((r: any) => r.pricePerNight))
     : 0;
