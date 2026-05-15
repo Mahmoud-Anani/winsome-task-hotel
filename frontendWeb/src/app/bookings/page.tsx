@@ -2,17 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
-import { bookingsApi, hotelsApi, roomsApi } from "@/lib/api";
+import { bookingsApi } from "@/lib/api";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useI18n } from "@/components/I18nProvider";
 import {
@@ -23,16 +18,7 @@ import {
   Building2,
   DoorOpen,
 } from "lucide-react";
-
-const createBookingSchema = z.object({
-  hotelId: z.string().min(1, "hotelRequired"),
-  roomId: z.string().min(1, "roomRequired"),
-  checkIn: z.string().min(1, "checkInRequired"),
-  checkOut: z.string().min(1, "checkOutRequired"),
-  guestCount: z.number().min(1, "guestMin"),
-});
-
-type CreateBookingForm = z.infer<typeof createBookingSchema>;
+import { CreateBookingModal } from "./create-booking-modal";
 
 export default function BookingsPage() {
   const router = useRouter();
@@ -267,216 +253,6 @@ export default function BookingsPage() {
       {showCreateModal && (
         <CreateBookingModal onClose={() => setShowCreateModal(false)} />
       )}
-    </div>
-  );
-}
-
-function CreateBookingModal({ onClose }: { onClose: () => void }) {
-  const { t } = useI18n();
-  const queryClient = useQueryClient();
-
-  const {
-    register,
-    handleSubmit,
-    control,
-    watch,
-    reset,
-    setValue,
-    formState: { errors },
-  } = useForm<CreateBookingForm>({
-    resolver: zodResolver(createBookingSchema),
-    defaultValues: {
-      hotelId: "",
-      roomId: "",
-      checkIn: "",
-      checkOut: "",
-      guestCount: 1,
-    },
-  });
-
-  const selectedHotelId = watch("hotelId");
-
-
-  const {
-    data: hotels,
-    isLoading: hotelsLoading,
-  }: { data: any; isLoading: boolean } = useQuery({
-    queryKey: ["hotels-list"],
-    queryFn: () => {
-      try {
-        const res = hotelsApi
-          .getAll({ limit: 100 })
-          .then((res) => res.data) as any;
-
-        const hotelsData = res?.data || [];
-        return hotelsData;
-      } catch (error) {
-        console.error("Hotels API Error:", error);
-        return [];
-      }
-    },
-    staleTime: 5 * 60 * 1000,
-    initialData: [],
-  });
-
-  const { data: rooms, isLoading: roomsLoading } = useQuery<any[]>({
-    queryKey: ["rooms-by-hotel", selectedHotelId],
-    queryFn:  () => {
-      if (!selectedHotelId) return [];
-      try {
-        const res =  roomsApi.getAll(selectedHotelId) as any;
-        const roomsData = Array.isArray(res?.data) ? res.data : [];
-        return roomsData;
-      } catch (error) {
-        console.error("Rooms API Error:", error);
-        return [];
-      }
-    },
-    staleTime: 5 * 60 * 1000,
-    initialData: [],
-  });
-
-  useEffect(() => {
-    if (!selectedHotelId) {
-      setValue("roomId", "");
-    }
-  }, [selectedHotelId, setValue]);
-
-  const createMutation = useMutation({
-    mutationFn: (data: CreateBookingForm) => bookingsApi.create(data as any),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["bookings"] });
-      queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
-      onClose();
-    },
-  });
-
-  const minDate = new Date().toISOString().split("T")[0];
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <CardHeader>
-          <CardTitle>{t("bookings.create.title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form
-            onSubmit={handleSubmit((data) => createMutation.mutate(data))}
-            className="space-y-4"
-          >
-            <div className="space-y-2">
-              <Label htmlFor="hotelId">{t("hotels.title")}</Label>
-              <select
-                id="hotelId"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                {...register("hotelId")}
-              >
-                <option value="">
-                  {hotelsLoading ? t("common.loading") : t("rooms.selectHotel")}
-                </option>
-                {hotels.length === 0 && !hotelsLoading && (
-                  <option value="" disabled>
-                    No hotels available
-                  </option>
-                )}
-                {hotels.map((hotel: any) => (
-                  <option key={hotel.id} value={hotel.id}>
-                    {hotel.name} - {hotel.city}
-                  </option>
-                ))}
-              </select>
-              {errors.hotelId && (
-                <p className="text-sm text-destructive">
-                  {t(`validation.${errors.hotelId.message}`)}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="roomId">{t("rooms.title")}</Label>
-              <select
-                id="roomId"
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                {...register("roomId")}
-                disabled={!selectedHotelId}
-              >
-                <option value="">
-                  {!selectedHotelId
-                    ? t("bookings.selectRoom")
-                    : roomsLoading
-                      ? t("common.loading")
-                      : rooms.length === 0
-                        ? "No rooms available"
-                        : t("bookings.selectRoom")}
-                </option>
-                {rooms.map((room: any) => (
-                  <option key={room.id} value={room.id}>
-                    {room.roomType} - ${room.pricePerNight}
-                    {t("rooms.perNight")} ({room.availableRoomsCount}{" "}
-                    {t("rooms.available")})
-                  </option>
-                ))}
-              </select>
-              {errors.roomId && (
-                <p className="text-sm text-destructive">
-                  {t(`validation.${errors.roomId.message}`)}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="checkIn">{t("dashboard.checkIn")}</Label>
-              <Input
-                id="checkIn"
-                type="date"
-                min={minDate}
-                {...register("checkIn")}
-              />
-              {errors.checkIn && (
-                <p className="text-sm text-destructive">
-                  {t(`validation.${errors.checkIn.message}`)}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="checkOut">{t("dashboard.checkOut")}</Label>
-              <Input
-                id="checkOut"
-                type="date"
-                min={minDate}
-                {...register("checkOut")}
-              />
-              {errors.checkOut && (
-                <p className="text-sm text-destructive">
-                  {t(`validation.${errors.checkOut.message}`)}
-                </p>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="guestCount">{t("bookings.guestCount")}</Label>
-              <Input
-                id="guestCount"
-                type="number"
-                min="1"
-                {...register("guestCount", { valueAsNumber: true })}
-              />
-              {errors.guestCount && (
-                <p className="text-sm text-destructive">
-                  {t(`validation.${errors.guestCount.message}`)}
-                </p>
-              )}
-            </div>
-            <div className="flex gap-2 pt-4">
-              <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending
-                  ? t("bookings.creating")
-                  : t("bookings.create.button")}
-              </Button>
-              <Button type="button" variant="outline" onClick={onClose}>
-                {t("rooms.cancel")}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
     </div>
   );
 }

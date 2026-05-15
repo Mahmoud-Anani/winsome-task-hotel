@@ -39,17 +39,21 @@ const translations: Record<Locale, Record<string, string>> = {
     "home.parking": "Parking",
     "home.restaurant": "Restaurant",
     "home.wifi": "Free WiFi",
-    "home.hero.subtitle": "Experience luxury and comfort in the heart of the city",
-    "home.hero.desc": "Discover our collection of premium hotels and book your perfect stay",
+    "home.hero.subtitle":
+      "Experience luxury and comfort in the heart of the city",
+    "home.hero.desc":
+      "Discover our collection of premium hotels and book your perfect stay",
     "home.cta.book": "Book Now",
     "home.cta.explore": "Explore Hotels",
     "home.features.title": "Why Choose Us",
     "home.features.luxury": "Luxury Accommodations",
-    "home.features.luxuryDesc": "Experience world-class amenities and exceptional service",
+    "home.features.luxuryDesc":
+      "Experience world-class amenities and exceptional service",
     "home.features.locations": "Prime Locations",
     "home.features.locationsDesc": "Hotels in the most desirable locations",
     "home.features.support": "24/7 Support",
-    "home.features.supportDesc": "Round-the-clock assistance for all your needs",
+    "home.features.supportDesc":
+      "Round-the-clock assistance for all your needs",
     "home.gallery.title": "Our Hotels",
     "home.gallery.subtitle": "Explore our beautiful properties",
     "home.testimonials.title": "What Our Guests Say",
@@ -73,24 +77,33 @@ const translations: Record<Locale, Record<string, string>> = {
     "common.error": "An error occurred",
     "about.title": "About Winsome Hotel",
     "about.subtitle": "Your trusted partner in luxury hospitality",
-    "about.description": "Winsome Hotel is a premier hospitality brand dedicated to providing exceptional accommodation experiences across the region. With a focus on luxury, comfort, and personalized service, we have become the preferred choice for travelers seeking the finest hotels.",
+    "about.description":
+      "Winsome Hotel is a premier hospitality brand dedicated to providing exceptional accommodation experiences across the region. With a focus on luxury, comfort, and personalized service, we have become the preferred choice for travelers seeking the finest hotels.",
     "about.mission": "Our Mission",
-    "about.missionText": "To provide world-class hospitality services that exceed our guests expectations while creating memorable experiences.",
+    "about.missionText":
+      "To provide world-class hospitality services that exceed our guests expectations while creating memorable experiences.",
     "about.vision": "Our Vision",
-    "about.visionText": "To be the leading hotel brand known for excellence in service, innovation, and guest satisfaction.",
+    "about.visionText":
+      "To be the leading hotel brand known for excellence in service, innovation, and guest satisfaction.",
     "about.values": "Our Values",
-    "about.valuesList": "Excellence, Integrity, Innovation, Guest First, Sustainability",
+    "about.valuesList":
+      "Excellence, Integrity, Innovation, Guest First, Sustainability",
     "terms.title": "Terms and Conditions",
     "terms.subtitle": "Please read our terms carefully",
-    "terms.description": "By using Winsome Hotel services, you agree to the following terms and conditions.",
+    "terms.description":
+      "By using Winsome Hotel services, you agree to the following terms and conditions.",
     "terms.acceptance": "Acceptance of Terms",
-    "terms.acceptanceText": "By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement.",
+    "terms.acceptanceText":
+      "By accessing and using this website, you accept and agree to be bound by the terms and provision of this agreement.",
     "terms.privacy": "Privacy Policy",
-    "terms.privacyText": "We are committed to protecting your privacy. Your personal information will be used in accordance with our privacy policy.",
+    "terms.privacyText":
+      "We are committed to protecting your privacy. Your personal information will be used in accordance with our privacy policy.",
     "terms.booking": "Booking Terms",
-    "terms.bookingText": "All bookings are subject to availability and confirmation. Please review your booking details before confirming.",
+    "terms.bookingText":
+      "All bookings are subject to availability and confirmation. Please review your booking details before confirming.",
     "terms.cancellation": "Cancellation Policy",
-    "terms.cancellationText": "Cancellations made 24 hours before check-in will receive a full refund. Late cancellations may incur a fee.",
+    "terms.cancellationText":
+      "Cancellations made 24 hours before check-in will receive a full refund. Late cancellations may incur a fee.",
     "dashboard.title": "Dashboard",
     "dashboard.totalHotels": "Total Hotels",
     "dashboard.totalBookings": "Total Bookings",
@@ -194,6 +207,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "validation.checkInRequired": "Check-in date is required",
     "validation.checkOutRequired": "Check-out date is required",
     "validation.guestMin": "Guest count must be at least 1",
+    "bookings.create.error": "Failed to create booking. Please try again.",
   },
   ar: {
     "nav.home": "الرئيسية",
@@ -251,24 +265,31 @@ const translations: Record<Locale, Record<string, string>> = {
     "common.error": "حدث خطأ",
     "about.title": "عن فندق وينسوم",
     "about.subtitle": "شريكك الموثوق في الضيافة الفاخرة",
-    "about.description": "فندق وينسوم هو علامة تجارية رائدة في مجال الضيافة مكرسة لتقديم تجارب إقامة استثنائية في جميع أنحاء المنطقة.",
+    "about.description":
+      "فندق وينسوم هو علامة تجارية رائدة في مجال الضيافة مكرسة لتقديم تجارب إقامة استثنائية في جميع أنحاء المنطقة.",
     "about.mission": "مهمتنا",
-    "about.missionText": "تقديم خدمات ضيافة عالمية المستوى تتجاوز توقعات ضيوفنا مع خلق تجارب لا تُنسى.",
+    "about.missionText":
+      "تقديم خدمات ضيافة عالمية المستوى تتجاوز توقعات ضيوفنا مع خلق تجارب لا تُنسى.",
     "about.vision": "رؤيتنا",
     "about.visionText": "أن نكون العلامة التجارية الرائدة في مجال الضيافة.",
     "about.values": "قيمنا",
     "about.valuesList": "التميز، النزاهة، الابتكار، الضيف أولاً، الاستدامة",
     "terms.title": "الشروط والأحكام",
     "terms.subtitle": "يرجى قراءة شروطنا بعناية",
-    "terms.description": "باستخدام خدمات فندق وينسوم، أنت توافق على الشروط والأحكام التالية.",
+    "terms.description":
+      "باستخدام خدمات فندق وينسوم، أنت توافق على الشروط والأحكام التالية.",
     "terms.acceptance": "قبول الشروط",
-    "terms.acceptanceText": "من خلال الوصول إلى هذا الموقع واستخدامه، فإنك تقبل وتوافق على الالتزام بشروط وأحكام هذا الاتفاق.",
+    "terms.acceptanceText":
+      "من خلال الوصول إلى هذا الموقع واستخدامه، فإنك تقبل وتوافق على الالتزام بشروط وأحكام هذا الاتفاق.",
     "terms.privacy": "سياسة الخصوصية",
-    "terms.privacyText": "نحن ملزمون بحماية خصوصيتك. سيتم استخدام معلوماتك الشخصية وفقًا لسياسة الخصوصية لدينا.",
+    "terms.privacyText":
+      "نحن ملزمون بحماية خصوصيتك. سيتم استخدام معلوماتك الشخصية وفقًا لسياسة الخصوصية لدينا.",
     "terms.booking": "شروط الحجز",
-    "terms.bookingText": "جميع الحجوزات تخضع للتوفر والتأكيد. يرجى مراجعة تفاصيل الحجز قبل التأكيد.",
+    "terms.bookingText":
+      "جميع الحجوزات تخضع للتوفر والتأكيد. يرجى مراجعة تفاصيل الحجز قبل التأكيد.",
     "terms.cancellation": "سياسة الإلغاء",
-    "terms.cancellationText": "إذا قمت بالإلغاء قبل 24 ساعة من تسجيل الوصول، ستسترد المبلغ بالكامل. قد تكون هناك رسوم للإلغاء المتأخر.",
+    "terms.cancellationText":
+      "إذا قمت بالإلغاء قبل 24 ساعة من تسجيل الوصول، ستسترد المبلغ بالكامل. قد تكون هناك رسوم للإلغاء المتأخر.",
     "dashboard.title": "لوحة التحكم",
     "dashboard.totalHotels": "إجمالي الفنادق",
     "dashboard.totalBookings": "إجمالي الحجوزات",
@@ -372,6 +393,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "validation.checkInRequired": "تاريخ تسجيل الوصول مطلوب",
     "validation.checkOutRequired": "تاريخ تسجيل المغادرة مطلوب",
     "validation.guestMin": "يجب أن يكون عدد الضيوف 1 أو أكثر",
+    "bookings.create.error": "فشل في إنشاء الحجز. يرجى المحاولة مرة أخرى.",
   },
 };
 
