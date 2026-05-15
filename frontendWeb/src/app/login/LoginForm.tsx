@@ -93,7 +93,7 @@ export function LoginForm() {
                 <p className="text-sm text-destructive">{errors.password.message}</p>
               )}
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
               {loading ? t('common.loading') : t('auth.loginBtn')}
             </Button>
           </form>
