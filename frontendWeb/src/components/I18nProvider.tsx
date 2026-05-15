@@ -75,6 +75,8 @@ const translations: Record<Locale, Record<string, string>> = {
     "auth.registerFailed": "Registration failed. Please try again.",
     "common.loading": "Loading...",
     "common.error": "An error occurred",
+    "pagination.previous": "Previous",
+    "pagination.next": "Next",
     "about.title": "About Winsome Hotel",
     "about.subtitle": "Your trusted partner in luxury hospitality",
     "about.description":
@@ -263,6 +265,8 @@ const translations: Record<Locale, Record<string, string>> = {
     "auth.registerFailed": "فشل إنشاء الحساب. يرجى المحاولة مرة أخرى.",
     "common.loading": "جاري التحميل...",
     "common.error": "حدث خطأ",
+    "pagination.previous": "السابق",
+    "pagination.next": "التالي",
     "about.title": "عن فندق وينسوم",
     "about.subtitle": "شريكك الموثوق في الضيافة الفاخرة",
     "about.description":

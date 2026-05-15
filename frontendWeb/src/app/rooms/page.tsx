@@ -34,6 +34,8 @@ export default function RoomsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingRoom, setEditingRoom] = useState<any>(null);
   const [hotelFilter, setHotelFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -42,14 +44,26 @@ export default function RoomsPage() {
   }, [isAuthenticated, router]);
   // @ts-ignore
   const {
-    data: rooms,
+    data: allRooms = [],
     isLoading,
   }: { data: any[] | undefined; isLoading: boolean } = useQuery({
     queryKey: ["rooms", hotelFilter],
-    queryFn: () =>
-      roomsApi.getAll(hotelFilter || undefined).then((res) => res.data),
+    queryFn: async () => {
+      console.log("Fetching rooms...");
+      const res = await roomsApi.getAll(hotelFilter || undefined) as any;
+      console.log("Rooms API response:", res);
+      console.log("Is array:", Array.isArray(res));
+      console.log("Is res.data array:", Array.isArray(res?.data));
+      return Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
+    },
     enabled: isAuthenticated,
   });
+
+  console.log("allRooms:", allRooms);
+  console.log("allRooms length:", allRooms.length);
+
+  const totalPages = Math.ceil(allRooms.length / limit);
+  const currentRooms = allRooms.slice((page - 1) * limit, page * limit);
 
   const { data: hotels } = useQuery({
     queryKey: ["hotels"],
@@ -107,7 +121,7 @@ export default function RoomsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rooms?.map((room: any) => (
+          {currentRooms?.map((room: any) => (
             <Card key={room.id} className="hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="text-xl">{room.roomType}</CardTitle>
@@ -165,7 +179,29 @@ export default function RoomsPage() {
         </div>
       )}
 
-      {(!rooms || rooms?.length === 0) && !isLoading && (
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-8">
+          <Button
+            variant="outline"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            {t("pagination.previous")}
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            {page} / {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
+            {t("pagination.next")}
+          </Button>
+        </div>
+      )}
+
+      {(!allRooms || allRooms?.length === 0) && !isLoading && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">{t("rooms.noRooms")}</p>
         </div>
