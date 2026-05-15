@@ -127,7 +127,7 @@ export function Navbar() {
 
               {isAuthenticated ? (
                 <>
-                  <div className="hidden md:flex items-center gap-2 ml-4">
+                  <div className="hidden md:grid items-center gap-0 ml-4">
                     <User className="h-4 w-4" />
                     <span className="text-sm font-medium">{user?.name}</span>
                     <span className="text-xs text-muted-foreground">({user?.role})</span>
@@ -142,9 +142,9 @@ export function Navbar() {
                   <Link href="/login">
                     <Button variant="ghost" size="sm">{t('nav.login')}</Button>
                   </Link>
-                  <Link href="/register">
+                  {/* <Link href="/register">
                     <Button size="sm">{t('nav.register')}</Button>
-                  </Link>
+                  </Link> */}
                 </div>
               )}
 
