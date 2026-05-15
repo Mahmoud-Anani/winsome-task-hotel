@@ -144,16 +144,29 @@ export const roomsApi = {
 
 export const bookingsApi = {
   getAll: (status?: string) =>
-    bookingsControllerFindAll({ query: { status }, client: heyApiClient }),
+    bookingsControllerFindAll({
+      query: { status },
+      client: heyApiClient,
+      credentials: "include",
+    }),
   getById: (id: string) =>
-    bookingsControllerFindOne({ path: { id }, client: heyApiClient }),
+    bookingsControllerFindOne({
+      path: { id },
+      client: heyApiClient,
+      credentials: "include",
+    }),
   create: (data: CreateBookingDto) =>
-    bookingsControllerCreate({ body: data, client: heyApiClient }),
+    bookingsControllerCreate({
+      body: data,
+      client: heyApiClient,
+      credentials: "include",
+    }),
   updateStatus: (id: string, status: UpdateBookingStatusDto["status"]) =>
     bookingsControllerUpdateStatus({
       path: { id },
       body: { status },
       client: heyApiClient,
+      credentials: "include",
     }),
 };
 
