@@ -41,7 +41,7 @@ export default function BookingsPage() {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mt-10">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Bookings</h1>
         <Button onClick={() => setShowCreateModal(true)}>
@@ -77,19 +77,24 @@ export default function BookingsPage() {
       ) : (
         <div className="space-y-4">
           {bookings?.map((booking: any) => (
-            <Card key={booking.id} className="hover:shadow-lg transition-shadow">
+            <Card
+              key={booking.id}
+              className="hover:shadow-lg transition-shadow"
+            >
               <CardContent className="p-6">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                   <div className="space-y-2">
                     <div className="flex items-center gap-4">
-                      <h3 className="text-lg font-semibold">{booking.hotel?.name}</h3>
+                      <h3 className="text-lg font-semibold">
+                        {booking.hotel?.name}
+                      </h3>
                       <Badge
                         variant={
-                          booking.status === 'CONFIRMED'
-                            ? 'success'
-                            : booking.status === 'PENDING'
-                            ? 'warning'
-                            : 'destructive'
+                          booking.status === "CONFIRMED"
+                            ? "success"
+                            : booking.status === "PENDING"
+                              ? "warning"
+                              : "destructive"
                         }
                       >
                         {booking.status}
@@ -102,28 +107,29 @@ export default function BookingsPage() {
                       </div>
                       <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-1" />
-                        {new Date(booking.checkIn).toLocaleDateString()} -{' '}
+                        {new Date(booking.checkIn).toLocaleDateString()} -{" "}
                         {new Date(booking.checkOut).toLocaleDateString()}
                       </div>
                       <div className="flex items-center">
-                        Room: {booking.room?.roomType} (Capacity: {booking.room?.capacity})
+                        Room: {booking.room?.roomType} (Capacity:{" "}
+                        {booking.room?.capacity})
                       </div>
                       <div className="flex items-center">
-                        <DollarSign className="h-4 w-4 mr-1" />
-                        ${booking.totalPrice}
+                        <DollarSign className="h-4 w-4 mr-1" />$
+                        {booking.totalPrice}
                       </div>
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    {user?.role === 'ADMIN' && (
+                    {user?.role === "ADMIN" && (
                       <>
-                        {booking.status === 'PENDING' && (
+                        {booking.status === "PENDING" && (
                           <Button
                             size="sm"
                             onClick={() =>
                               updateStatusMutation.mutate({
                                 id: booking.id,
-                                status: 'CONFIRMED',
+                                status: "CONFIRMED",
                               })
                             }
                             disabled={updateStatusMutation.isPending}
@@ -131,14 +137,15 @@ export default function BookingsPage() {
                             Confirm
                           </Button>
                         )}
-                        {(booking.status === 'PENDING' || booking.status === 'CONFIRMED') && (
+                        {(booking.status === "PENDING" ||
+                          booking.status === "CONFIRMED") && (
                           <Button
                             variant="destructive"
                             size="sm"
                             onClick={() =>
                               updateStatusMutation.mutate({
                                 id: booking.id,
-                                status: 'CANCELLED',
+                                status: "CANCELLED",
                               })
                             }
                             disabled={updateStatusMutation.isPending}

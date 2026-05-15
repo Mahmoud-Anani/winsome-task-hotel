@@ -16,6 +16,7 @@ import { hotelsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useI18n } from '@/components/I18nProvider';
 import { Plus, Search, Star, MapPin, Edit, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 
 const createHotelSchema = z.object({
   name: z.string().min(2, 'hotelNameMin'),
@@ -57,7 +58,7 @@ export default function HotelsPage() {
   if (!isAuthenticated) return null;
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 mt-10">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">{t('hotels.title')}</h1>
         {(user?.role === 'ADMIN' || user?.role === 'HOTEL_MANAGER') && (
@@ -120,13 +121,13 @@ export default function HotelsPage() {
                       {hotel._count?.bookings || 0} {t('hotels.bookings')}
                     </span>
                     <div className="flex gap-2">
+                      <Link href={`/hotels/${hotel.id}`} passHref>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => router.push(`/hotels/${hotel.id}`)}
                       >
                         {t('hotels.view')}
-                      </Button>
+                      </Button></Link>
                       {(user?.role === 'ADMIN' || user?.role === 'HOTEL_MANAGER') && (
                         <Button
                           variant="destructive"

@@ -42,7 +42,7 @@ export default function RootLayout({
       <body className="overflow-x-hidden">
         <Providers>
           <Navbar />
-          <main className="min-h-screen bg-background overflow-x-hidden">
+          <main className="mt-4 min-h-screen bg-background overflow-x-hidden">
             {children}
           </main>
         </Providers>

@@ -8,7 +8,7 @@ export default function TermsPage() {
   const { t } = useI18n();
 
   return (
-    <div className="min-h-screen py-20">
+    <div className="min-h-screen py-20 mt-4">
       <div className="container px-4">
         {/* Hero Section */}
         <div className="max-w-3xl mx-auto text-center mb-16">

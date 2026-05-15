@@ -164,6 +164,12 @@ const translations: Record<Locale, Record<string, string>> = {
     "validation.cityMin": "City must be at least 2 characters",
     "validation.addressMin": "Address must be at least 5 characters",
     "validation.starsRange": "Stars must be between 1 and 5",
+    "hotels.detail.notFound": "Hotel not found",
+    "hotels.detail.backToHotels": "Back to Hotels",
+    "hotels.detail.bookings": "Total Bookings",
+    "hotels.detail.rooms": "Available Rooms",
+    "hotels.detail.capacity": "Capacity",
+    "hotels.detail.noRooms": "No rooms available for this hotel",
   },
   ar: {
     "nav.home": "الرئيسية",
@@ -306,6 +312,12 @@ const translations: Record<Locale, Record<string, string>> = {
     "validation.cityMin": "يجب أن تكون المدينة حرفين على الأقل",
     "validation.addressMin": "يجب أن يكون العنوان 5 أحرف على الأقل",
     "validation.starsRange": "يجب أن يكون النجوم بين 1 و 5",
+    "hotels.detail.notFound": "الفندق غير موجود",
+    "hotels.detail.backToHotels": "العودة إلى الفنادق",
+    "hotels.detail.bookings": "إجمالي الحجوزات",
+    "hotels.detail.rooms": "الغرف المتاحة",
+    "hotels.detail.capacity": "السعة",
+    "hotels.detail.noRooms": "لا توجد غرف متاحة لهذا الفندق",
   },
 };
 
