@@ -27,6 +27,8 @@ export default function BookingsPage() {
   const { t } = useI18n();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -34,20 +36,24 @@ export default function BookingsPage() {
     }
   }, [isAuthenticated, router]);
 
-  const { data: bookings = [], isLoading, refetch } = useQuery<any[]>({
+  const { data: allBookings = [], isLoading, refetch } = useQuery<any[]>({
     queryKey: ["bookings", statusFilter],
     queryFn: async () => {
-      console.log("Fetching bookings...");
       const res = await bookingsApi.getAll(statusFilter || undefined) as any;
-      console.log("Bookings response:", res);
       return res.data || [];
     },
     enabled: true,
   });
 
+  const totalPages = Math.ceil(allBookings.length / limit);
+  const currentBookings = allBookings.slice((page - 1) * limit, page * limit);
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter]);
+
   useEffect(() => {
     if (isAuthenticated) {
-      console.log("Authenticated, refetching bookings");
       refetch();
     }
   }, [isAuthenticated, refetch]);
@@ -68,11 +74,11 @@ export default function BookingsPage() {
   if (!isAuthenticated) return null;
 
   const pendingCount =
-    bookings?.filter((b: any) => b.status === "PENDING").length || 0;
+    allBookings?.filter((b: any) => b.status === "PENDING").length || 0;
   const confirmedCount =
-    bookings?.filter((b: any) => b.status === "CONFIRMED").length || 0;
+    allBookings?.filter((b: any) => b.status === "CONFIRMED").length || 0;
   const cancelledCount =
-    bookings?.filter((b: any) => b.status === "CANCELLED").length || 0;
+    allBookings?.filter((b: any) => b.status === "CANCELLED").length || 0;
 
   return (
     <div className="container mx-auto px-4 py-8 mt-10">
@@ -91,7 +97,7 @@ export default function BookingsPage() {
       <div className="grid grid-cols-3 md:grid-cols-4 gap-4 mb-8">
         <Card className="bg-primary/5">
           <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold">{bookings?.length || 0}</p>
+            <p className="text-2xl font-bold">{allBookings?.length || 0}</p>
             <p className="text-sm text-muted-foreground">
               {t("bookings.total")}
             </p>
@@ -153,7 +159,7 @@ export default function BookingsPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {bookings?.map((booking: any) => (
+          {currentBookings?.map((booking: any) => (
             <Card
               key={booking.id}
               className="hover:shadow-lg transition-shadow"
@@ -249,7 +255,29 @@ export default function BookingsPage() {
         </div>
       )}
 
-      {(!bookings || bookings.length === 0) && !isLoading && (
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 mt-8">
+          <Button
+            variant="outline"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            {t("pagination.previous")}
+          </Button>
+          <span className="text-sm text-muted-foreground">
+            {page} / {totalPages}
+          </span>
+          <Button
+            variant="outline"
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+          >
+            {t("pagination.next")}
+          </Button>
+        </div>
+      )}
+
+      {(!allBookings || allBookings.length === 0) && !isLoading && (
         <Card>
           <CardContent className="p-12 text-center">
             <Calendar className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
