@@ -4,10 +4,22 @@ import Link from 'next/link';
 import { useI18n } from '@/components/I18nProvider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Star, MapPin, Clock, Shield } from 'lucide-react';
+import { Star, MapPin, Clock, Shield, Wifi, Utensils, Car, Users } from 'lucide-react';
 
 export default function HomePage() {
   const { t } = useI18n();
+
+  const hotels = [
+    { name: 'Grand Palace Hotel', city: 'Dubai', image: '🏰', rating: 5 },
+    { name: 'Seaside Resort', city: 'Maldives', image: '🏝️', rating: 5 },
+    { name: 'Mountain Lodge', city: 'Swiss Alps', image: '🏔️', rating: 4 },
+  ];
+
+  const testimonials = [
+    { name: 'Ahmed Al-Rashid', text: 'Amazing experience! The staff was incredibly friendly and the rooms were spotless.', rating: 5 },
+    { name: 'Sarah Johnson', text: 'Best hotel stay I have ever had. Will definitely come back again!', rating: 5 },
+    { name: 'Michael Chen', text: 'Great location, excellent service, and beautiful views. Highly recommended!', rating: 5 },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -44,7 +56,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Decorative elements */}
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
       </section>
 
@@ -88,44 +99,92 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* About Section */}
+      {/* Amenities Section */}
       <section className="py-20">
         <div className="container px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
-            <div className="space-y-6">
-              <h2 className="text-4xl font-bold">Winsome Hotel</h2>
-              <p className="text-lg text-muted-foreground">
-                Experience the pinnacle of luxury hospitality at Winsome Hotel. 
-                Our properties are strategically located in prime destinations, 
-                offering guests unparalleled comfort and world-class amenities.
-              </p>
-              <div className="flex gap-8">
-                <div>
-                  <div className="text-3xl font-bold text-primary">500+</div>
-                  <div className="text-sm text-muted-foreground">Happy Guests</div>
+          <h2 className="text-3xl font-bold text-center mb-12">Our Amenities</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+            <Card className="border-0 shadow-md bg-card/50">
+              <CardContent className="p-6 text-center space-y-2">
+                <Wifi className="w-8 h-8 mx-auto text-primary" />
+                <span className="font-medium">Free WiFi</span>
+              </CardContent>
+            </Card>
+            <Card className="border-0 shadow-md bg-card/50">
+              <CardContent className="p-6 text-center space-y-2">
+                <Utensils className="w-8 h-8 mx-auto text-primary" />
+                <span className="font-medium">Restaurant</span>
+              </CardContent>
+            </Card>
+            <Card className="border-0 shadow-md bg-card/50">
+              <CardContent className="p-6 text-center space-y-2">
+                <Car className="w-8 h-8 mx-auto text-primary" />
+                <span className="font-medium">Parking</span>
+              </CardContent>
+            </Card>
+            <Card className="border-0 shadow-md bg-card/50">
+              <CardContent className="p-6 text-center space-y-2">
+                <Users className="w-8 h-8 mx-auto text-primary" />
+                <span className="font-medium">Concierge</span>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section className="py-20 bg-muted/30">
+        <div className="container px-4">
+          <h2 className="text-3xl font-bold text-center mb-4">
+            {t('home.gallery.title')}
+          </h2>
+          <p className="text-center text-muted-foreground mb-12">
+            {t('home.gallery.subtitle')}
+          </p>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {hotels.map((hotel, index) => (
+              <Card key={index} className="border-0 shadow-lg overflow-hidden">
+                <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                  <div className="text-6xl">{hotel.image}</div>
                 </div>
-                <div>
-                  <div className="text-3xl font-bold text-primary">50+</div>
-                  <div className="text-sm text-muted-foreground">Properties</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-primary">24/7</div>
-                  <div className="text-sm text-muted-foreground">Support</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Shield className="w-5 h-5 text-primary" />
-                <span>Trusted by thousands of travelers worldwide</span>
-              </div>
-            </div>
-            <div className="relative">
-              <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-8xl mb-4">🏨</div>
-                  <div className="text-xl font-semibold">Luxury Awaits</div>
-                </div>
-              </div>
-            </div>
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-semibold">{hotel.name}</h3>
+                  <p className="text-muted-foreground text-sm">{hotel.city}</p>
+                  <div className="flex items-center gap-1 mt-2">
+                    {[...Array(hotel.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20">
+        <div className="container px-4">
+          <h2 className="text-3xl font-bold text-center mb-4">
+            {t('home.testimonials.title')}
+          </h2>
+          <p className="text-center text-muted-foreground mb-12">
+            {t('home.testimonials.subtitle')}
+          </p>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="border-0 shadow-md bg-card/50">
+                <CardContent className="p-6 space-y-4">
+                  <div className="flex items-center gap-1">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground">"{testimonial.text}"</p>
+                  <div className="font-medium">- {testimonial.name}</div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>

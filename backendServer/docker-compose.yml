@@ -22,7 +22,7 @@ services:
     restart: always
     environment:
       DATABASE_URL: postgresql://hotel_user:hotel_password@postgres:5432/hotel_booking
-      JWT_SECRET: kdvksldnvsndvksdv5sdv5sdvsdvsdkvnsdnvuosdnuvsduovnsdvnsdvsd8vs6df4v56sd4v56d4sv879r7tr89h89tyj987yu87ui87loi897l5df5a6d4as654das8d89as7d6as45d64a89asas654f6asdf489qwer89w7t89e7ry8tr564ryt65u4ty56u4j564564cv5b4cv89bvcbcv8bx8c9sd8f7ds987fd89s7fd89s
+      JWT_SECRET: your_jwt_secret_key
       PORT: 3001
       FRONTEND_URL: http://localhost:3000
     ports:
