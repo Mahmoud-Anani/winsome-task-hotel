@@ -38,11 +38,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ar" dir="rtl">
-      <body>
+    <html lang="ar" dir="rtl" className="overflow-x-hidden">
+      <body className="overflow-x-hidden">
         <Providers>
           <Navbar />
-          <main className="min-h-screen bg-background">
+          <main className="min-h-screen bg-background overflow-x-hidden">
             {children}
           </main>
         </Providers>

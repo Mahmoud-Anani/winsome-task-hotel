@@ -99,7 +99,7 @@ export type AuthControllerLoginResponses = {
     /**
      * Login successful
      */
-    200: unknown;
+    200: any;
 };
 
 export type UsersControllerFindAllData = {

@@ -33,12 +33,6 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 const heyApiClient = createClient({
   baseUrl: API_URL,
-  auth: () => {
-    if (typeof window === "undefined") {
-      return undefined;
-    }
-    return localStorage.getItem("token") ?? undefined;
-  },
   headers: {
     "Content-Type": "application/json",
   },
@@ -46,9 +40,17 @@ const heyApiClient = createClient({
 
 export const authApi = {
   register: (data: RegisterDto) =>
-    authControllerRegister({ body: data, client: heyApiClient }),
+    authControllerRegister({
+      body: data,
+      client: heyApiClient,
+      credentials: "include",
+    }),
   login: (data: LoginDto) =>
-    authControllerLogin({ body: data, client: heyApiClient }),
+    authControllerLogin({
+      body: data,
+      client: heyApiClient,
+      credentials: "include",
+    }),
 };
 
 export const hotelsApi = {
@@ -84,7 +86,7 @@ export const bookingsApi = {
     bookingsControllerFindOne({ path: { id }, client: heyApiClient }),
   create: (data: CreateBookingDto) =>
     bookingsControllerCreate({ body: data, client: heyApiClient }),
-  updateStatus: (id: string, status: UpdateBookingStatusDto['status']) =>
+  updateStatus: (id: string, status: UpdateBookingStatusDto["status"]) =>
     bookingsControllerUpdateStatus({
       path: { id },
       body: { status },

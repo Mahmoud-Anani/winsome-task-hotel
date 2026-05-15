@@ -43,9 +43,8 @@ export function RegisterForm() {
     setError('');
     try {
       const response = await authApi.register(data);
-      const { user, token } = response.data;
-      localStorage.setItem('token', token);
-      setAuth(user, token);
+      const { user } = response.data;
+      setAuth(user);
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || t('auth.registerFailed'));

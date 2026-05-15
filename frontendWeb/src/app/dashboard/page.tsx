@@ -19,10 +19,18 @@ export default function DashboardPage() {
     }
   }, [isAuthenticated, router]);
 
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats = null, isLoading } = useQuery({
     queryKey: ['dashboard-stats'],
-    queryFn: () => dashboardApi.getStats().then((res) => res.data),
+    queryFn: async () => {
+      try {
+        const response = await dashboardApi.getStats();
+        return response.data;
+      } catch {
+        return null;
+      }
+    },
     enabled: isAuthenticated,
+    initialData: null,
   });
 
   if (!isAuthenticated) return null;
