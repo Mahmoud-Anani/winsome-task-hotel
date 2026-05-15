@@ -168,8 +168,17 @@ const translations: Record<Locale, Record<string, string>> = {
     "hotels.detail.backToHotels": "Back to Hotels",
     "hotels.detail.bookings": "Total Bookings",
     "hotels.detail.rooms": "Available Rooms",
+    "rooms.update.title": "Update Room",
+    "rooms.update.save": "Save Changes",
+    "rooms.updating": "Saving...",
     "hotels.detail.capacity": "Capacity",
     "hotels.detail.noRooms": "No rooms available for this hotel",
+    "hotels.update.title": "Update Hotel",
+    "hotels.update.save": "Save Changes",
+    "hotels.updating": "Saving...",
+    "roles.admin": "Admin",
+    "roles.user": "User",
+    "roles.hotel_manager": "Hotel Manager",
   },
   ar: {
     "nav.home": "الرئيسية",
@@ -233,8 +242,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "about.missionText":
       "تقديم خدمات ضيافة عالمية المستوى تتجاوز توقعات ضيوفنا مع خلق تجارب لا تُنسى.",
     "about.vision": "رؤيتنا",
-    "about.visionText":
-      "أن نكون العلامة التجارية الرائدة في مجال الضيافة.",
+    "about.visionText": "أن نكون العلامة التجارية الرائدة في مجال الضيافة.",
     "about.values": "قيمنا",
     "about.valuesList": "التميز، النزاهة، الابتكار، الضيف أولاً، الاستدامة",
     "terms.title": "الشروط والأحكام",
@@ -318,6 +326,15 @@ const translations: Record<Locale, Record<string, string>> = {
     "hotels.detail.rooms": "الغرف المتاحة",
     "hotels.detail.capacity": "السعة",
     "hotels.detail.noRooms": "لا توجد غرف متاحة لهذا الفندق",
+    "hotels.update.title": "تعديل الفندق",
+    "hotels.update.save": "حفظ التغييرات",
+    "hotels.updating": "جاري الحفظ...",
+    "rooms.update.title": "تعديل الغرفة",
+    "rooms.update.save": "حفظ التغييرات",
+    "rooms.updating": "جاري الحفظ...",
+    "roles.admin": "مدير",
+    "roles.user": "مستخدم",
+    "roles.hotel_manager": "مدير فندق",
   },
 };
 

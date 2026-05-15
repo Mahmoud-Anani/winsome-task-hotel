@@ -35,6 +35,7 @@ export default function HotelsPage() {
   const { t } = useI18n();
   const [search, setSearch] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingHotel, setEditingHotel] = useState<any>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -129,14 +130,23 @@ export default function HotelsPage() {
                         {t('hotels.view')}
                       </Button></Link>
                       {(user?.role === 'ADMIN' || user?.role === 'HOTEL_MANAGER') && (
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => deleteMutation.mutate(hotel.id)}
-                          disabled={deleteMutation.isPending}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setEditingHotel(hotel)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => deleteMutation.mutate(hotel.id)}
+                            disabled={deleteMutation.isPending}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -155,6 +165,13 @@ export default function HotelsPage() {
 
       {showCreateModal && (
         <CreateHotelModal onClose={() => setShowCreateModal(false)} />
+      )}
+
+      {editingHotel && (
+        <UpdateHotelModal
+          hotel={editingHotel}
+          onClose={() => setEditingHotel(null)}
+        />
       )}
     </div>
   );
@@ -225,6 +242,83 @@ function CreateHotelModal({ onClose }: { onClose: () => void }) {
             <div className="flex gap-2 pt-4">
               <Button type="submit" disabled={createMutation.isPending}>
                 {createMutation.isPending ? t('hotels.creating') : t('hotels.create')}
+              </Button>
+              <Button type="button" variant="outline" onClick={onClose}>
+                {t('hotels.cancel')}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function UpdateHotelModal({ hotel, onClose }: { hotel: any; onClose: () => void }) {
+  const { t } = useI18n();
+  const queryClient = useQueryClient();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateHotelForm>({
+    resolver: zodResolver(createHotelSchema),
+    defaultValues: {
+      name: hotel.name || '',
+      city: hotel.city || '',
+      address: hotel.address || '',
+      stars: hotel.stars || 3,
+      status: hotel.status || 'ACTIVE',
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: CreateHotelForm) => hotelsApi.update(hotel.id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hotels'] });
+      onClose();
+    },
+  });
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>{t('hotels.update.title')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit((data) => updateMutation.mutate(data))} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="update-name">{t('hotels.name')}</Label>
+              <Input id="update-name" {...register('name')} />
+              {errors.name && <p className="text-sm text-destructive">{t(`validation.${errors.name.message}`)}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="update-city">{t('hotels.city')}</Label>
+              <Input id="update-city" {...register('city')} />
+              {errors.city && <p className="text-sm text-destructive">{t(`validation.${errors.city.message}`)}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="update-address">{t('hotels.address')}</Label>
+              <Input id="update-address" {...register('address')} />
+              {errors.address && <p className="text-sm text-destructive">{t(`validation.${errors.address.message}`)}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="update-stars">{t('hotels.stars')}</Label>
+              <Input id="update-stars" type="number" min="1" max="5" {...register('stars', { valueAsNumber: true })} />
+              {errors.stars && <p className="text-sm text-destructive">{t(`validation.${errors.stars.message}`)}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="update-status">{t('hotels.status')}</Label>
+              <select id="update-status" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" {...register('status')}>
+                <option value="ACTIVE">{t('hotels.active')}</option>
+                <option value="INACTIVE">{t('hotels.inactive')}</option>
+              </select>
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button type="submit" disabled={updateMutation.isPending}>
+                {updateMutation.isPending ? t('hotels.updating') : t('hotels.update.save')}
               </Button>
               <Button type="button" variant="outline" onClick={onClose}>
                 {t('hotels.cancel')}

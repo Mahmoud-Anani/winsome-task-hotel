@@ -32,7 +32,7 @@ export default function HotelDetailPage() {
     }
   }, [isAuthenticated, router]);
 
-  const { data: hotel, isLoading: hotelLoading } = useQuery({
+  const { data: hotel = { name: "" }, isLoading: hotelLoading } = useQuery({
     queryKey: ["hotel", hotelId],
     queryFn: () => hotelsApi.getById(hotelId).then((res) => res.data),
     enabled: !!hotelId && isAuthenticated,
