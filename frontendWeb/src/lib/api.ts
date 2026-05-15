@@ -84,7 +84,7 @@ export const bookingsApi = {
     bookingsControllerFindOne({ path: { id }, client: heyApiClient }),
   create: (data: CreateBookingDto) =>
     bookingsControllerCreate({ body: data, client: heyApiClient }),
-  updateStatus: (id: string, status: string) =>
+  updateStatus: (id: string, status: UpdateBookingStatusDto['status']) =>
     bookingsControllerUpdateStatus({
       path: { id },
       body: { status },

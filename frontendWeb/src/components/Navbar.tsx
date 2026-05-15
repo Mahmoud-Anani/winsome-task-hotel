@@ -82,19 +82,22 @@ export function Navbar() {
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-8">
-              <Link href="/" className="text-2xl font-bold text-primary flex items-center gap-2">
+              <Link
+                href="/"
+                className="text-2xl font-bold text-primary flex items-center gap-2"
+              >
                 <Building2 className="h-6 w-6" />
                 Winsome
               </Link>
-              <div className="hidden md:flex items-center gap-1">
+              <div className="hidden starScreen:flex items-center gap-1">
                 {mainLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     className={`text-sm font-medium transition-colors px-3 py-2 rounded-md ${
-                      pathname === link.href 
-                        ? 'text-primary bg-primary/10' 
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      pathname === link.href
+                        ? "text-primary bg-primary/10"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                   >
                     <span className="flex items-center gap-2">
@@ -114,33 +117,41 @@ export function Navbar() {
                 className="flex items-center gap-1"
               >
                 <Globe className="h-4 w-4" />
-                {locale === 'en' ? 'عربي' : 'English'}
+                {locale === "en" ? "عربي" : "English"}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleTheme}
-                title={theme === 'dark' ? 'Switch to Light' : 'Switch to Dark'}
+                title={theme === "dark" ? "Switch to Light" : "Switch to Dark"}
               >
-                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                {theme === "dark" ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
               </Button>
 
               {isAuthenticated ? (
                 <>
-                  <div className="hidden md:grid items-center gap-0 ml-4">
+                  <div className="hidden starScreen:grid items-center gap-0 ml-4">
                     <User className="h-4 w-4" />
                     <span className="text-sm font-medium">{user?.name}</span>
-                    <span className="text-xs text-muted-foreground">({user?.role})</span>
+                    <span className="text-xs text-muted-foreground">
+                      ({user?.role})
+                    </span>
                   </div>
                   <Button variant="ghost" size="sm" onClick={handleLogout}>
                     <LogOut className="h-4 w-4 mr-2" />
-                    {t('nav.logout')}
+                    {t("nav.logout")}
                   </Button>
                 </>
               ) : (
-                <div className="hidden md:flex items-center gap-2">
+                <div className="hidden starScreen:flex items-center gap-2">
                   <Link href="/login">
-                    <Button variant="ghost" size="sm">{t('nav.login')}</Button>
+                    <Button variant="ghost" size="sm">
+                      {t("nav.login")}
+                    </Button>
                   </Link>
                   {/* <Link href="/register">
                     <Button size="sm">{t('nav.register')}</Button>
@@ -149,7 +160,7 @@ export function Navbar() {
               )}
 
               <button
-                className="md:hidden p-2"
+                className="starScreen:hidden p-2"
                 onClick={() => setMobileMenuOpen(true)}
               >
                 <Menu className="h-6 w-6" />
@@ -163,17 +174,23 @@ export function Navbar() {
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50">
           {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={closeMobileMenu}
           />
-          
+
           {/* Sidebar */}
-          <div className={`absolute top-0 ${locale === 'ar' ? 'left-0' : 'right-0'} h-full w-80 bg-background shadow-xl transform transition-transform duration-300 ease-in-out`}>
+          <div
+            className={`absolute top-0 ${locale === "ar" ? "left-0" : "right-0"} h-full w-80 bg-background shadow-xl transform transition-transform duration-300 ease-in-out`}
+          >
             <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b">
-                <Link href="/" className="text-xl font-bold text-primary flex items-center gap-2" onClick={closeMobileMenu}>
+                <Link
+                  href="/"
+                  className="text-xl font-bold text-primary flex items-center gap-2"
+                  onClick={closeMobileMenu}
+                >
                   <Building2 className="h-5 w-5" />
                   Winsome
                 </Link>
@@ -193,9 +210,9 @@ export function Navbar() {
                       key={link.href}
                       href={link.href}
                       className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                        pathname === link.href 
-                          ? 'text-primary bg-primary/10' 
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                        pathname === link.href
+                          ? "text-primary bg-primary/10"
+                          : "text-muted-foreground hover:text-foreground hover:bg-muted"
                       }`}
                       onClick={closeMobileMenu}
                     >
@@ -212,12 +229,16 @@ export function Navbar() {
                       <div className="flex items-center gap-3 px-4 py-2">
                         <User className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <div className="text-sm font-medium">{user?.name}</div>
-                          <div className="text-xs text-muted-foreground">({user?.role})</div>
+                          <div className="text-sm font-medium">
+                            {user?.name}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            ({user?.role})
+                          </div>
                         </div>
                       </div>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         className="w-full justify-start px-4 text-red-500 hover:text-red-600 hover:bg-red-50"
                         onClick={() => {
                           handleLogout();
@@ -225,24 +246,24 @@ export function Navbar() {
                         }}
                       >
                         <LogOut className="h-5 w-5 mr-3" />
-                        {t('nav.logout')}
+                        {t("nav.logout")}
                       </Button>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <Link 
-                        href="/login" 
+                      <Link
+                        href="/login"
                         className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-primary border border-primary rounded-lg hover:bg-primary/5"
                         onClick={closeMobileMenu}
                       >
-                        {t('nav.login')}
+                        {t("nav.login")}
                       </Link>
-                      <Link 
-                        href="/register" 
+                      <Link
+                        href="/register"
                         className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90"
                         onClick={closeMobileMenu}
                       >
-                        {t('nav.register')}
+                        {t("nav.register")}
                       </Link>
                     </div>
                   )}
@@ -259,14 +280,14 @@ export function Navbar() {
                     className="flex items-center gap-2"
                   >
                     <Globe className="h-4 w-4" />
-                    {locale === 'en' ? 'عربي' : 'English'}
+                    {locale === "en" ? "عربي" : "English"}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={toggleTheme}
-                  >
-                    {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                  <Button variant="ghost" size="sm" onClick={toggleTheme}>
+                    {theme === "dark" ? (
+                      <Sun className="h-4 w-4" />
+                    ) : (
+                      <Moon className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </div>

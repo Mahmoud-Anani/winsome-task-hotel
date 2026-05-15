@@ -28,6 +28,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "nav.login": "Login",
     "nav.register": "Register",
     "nav.logout": "Logout",
+    "nav.more": "More",
     "home.hero.title": "Welcome to Winsome Hotel",
 
     "home.CTA.title": "Book Your Stay",
@@ -116,7 +117,7 @@ const translations: Record<Locale, Record<string, string>> = {
     "nav.login": "تسجيل الدخول",
     "nav.register": "إنشاء حساب",
     "nav.logout": "تسجيل الخروج",
-
+    "nav.more": "المزيد",
     "home.CTA.title": "احجز إقامتك",
     "home.CTA.subtitle": "استمتع بالرفاهية والراحة معنا",
 
