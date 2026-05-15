@@ -52,7 +52,7 @@ export function LoginForm() {
     setLoading(true);
     setError("");
     try {
-      const response = await authApi.login(data);
+      const response = await authApi.login(data) as any;
       const { user } = response.data;
       console.log(user);
 

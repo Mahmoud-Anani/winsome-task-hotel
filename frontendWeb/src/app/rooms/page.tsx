@@ -40,8 +40,11 @@ export default function RoomsPage() {
       router.push("/login");
     }
   }, [isAuthenticated, router]);
-
-  const { data: rooms, isLoading } = useQuery({
+  // @ts-ignore
+  const {
+    data: rooms,
+    isLoading,
+  }: { data: any[] | undefined; isLoading: boolean } = useQuery({
     queryKey: ["rooms", hotelFilter],
     queryFn: () =>
       roomsApi.getAll(hotelFilter || undefined).then((res) => res.data),
@@ -419,7 +422,9 @@ function UpdateRoomModal({
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="update-pricePerNight">{t("rooms.pricePerNight")}</Label>
+              <Label htmlFor="update-pricePerNight">
+                {t("rooms.pricePerNight")}
+              </Label>
               <Input
                 id="update-pricePerNight"
                 type="number"

@@ -54,7 +54,7 @@ export function RegisterForm() {
     setLoading(true);
     setError("");
     try {
-      const response = await authApi.register(data);
+      const response = await authApi.register(data) as any;
       const { user } = response.data;
       setAuth(user);
       router.push("/dashboard");

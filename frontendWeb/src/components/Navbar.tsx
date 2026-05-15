@@ -308,7 +308,11 @@ export function Navbar() {
                         <div className="px-4 py-3 border-b">
                           <p className="text-sm font-medium">{user?.name}</p>
                           <p className="text-xs text-muted-foreground">
-                            {user?.role==="ADMIN" ? t("roles.admin") : user?.role==="HOTEL_MANAGER" ? t("roles.hotel_manager") : t("roles.user")}
+                            {user?.role === "ADMIN"
+                              ? t("roles.admin")
+                              : user?.role === "HOTEL_MANAGER"
+                                ? t("roles.hotel_manager")
+                                : t("roles.user")}
                           </p>
                         </div>
                         <Button
@@ -424,7 +428,7 @@ export function Navbar() {
                       <div>
                         <div className="text-sm font-medium">{user?.name}</div>
                         <div className="text-xs text-muted-foreground">
-                          ({user?.role})
+                          {t(`roles.${user?.role?.toLowerCase()}`)}
                         </div>
                       </div>
                     </div>

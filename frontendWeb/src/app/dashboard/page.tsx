@@ -21,11 +21,11 @@ export default function DashboardPage() {
     }
   }, [isAuthenticated, router]);
 
-  const { data: stats = null, isLoading } = useQuery({
+  const { data: stats = null, isLoading } = useQuery<any>({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
       try {
-        const response = await dashboardApi.getStats();
+        const response = await dashboardApi.getStats() as any;
         return response.data;
       } catch {
         return null;
