@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/store/useAuthStore";
+import { authApi } from "@/lib/api";
 import {
   LogOut,
   User,
@@ -36,7 +37,13 @@ export function Navbar() {
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const moreDropdownRef = useRef<HTMLDivElement>(null);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      // ignore network errors and still clear client state
+    }
+
     logout();
     router.push("/login");
     setUserDropdownOpen(false);

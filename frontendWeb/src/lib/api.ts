@@ -28,6 +28,7 @@ import type {
   UpdateHotelDto,
   UpdateRoomDto,
 } from "@/client";
+import type { User } from "@/types";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
@@ -51,6 +52,26 @@ export const authApi = {
       client: heyApiClient,
       credentials: "include",
     }),
+  logout: async () => {
+    await fetch(`${API_URL}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+  },
+  me: async () => {
+    const response = await fetch(`${API_URL}/auth/me`, {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (!response.ok) {
+      throw new Error("Unauthorized");
+    }
+
+    return response.json() as Promise<{ user: User }>;
+  },
 };
 
 export const hotelsApi = {

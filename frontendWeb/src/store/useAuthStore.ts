@@ -1,5 +1,6 @@
-import { create } from 'zustand';
-import { User } from '@/types';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { User } from "@/types";
 
 interface AuthState {
   user: User | null;
@@ -8,13 +9,24 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>()((set) => ({
-  user: null,
-  isAuthenticated: false,
-  setAuth: (user) => {
-    set({ user, isAuthenticated: true });
-  },
-  logout: () => {
-    set({ user: null, isAuthenticated: false });
-  },
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      isAuthenticated: false,
+      setAuth: (user) => {
+        set({ user, isAuthenticated: true });
+      },
+      logout: () => {
+        set({ user: null, isAuthenticated: false });
+      },
+    }),
+    {
+      name: "winsome-auth-store",
+      partialize: (state) => ({
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
+    },
+  ),
+);

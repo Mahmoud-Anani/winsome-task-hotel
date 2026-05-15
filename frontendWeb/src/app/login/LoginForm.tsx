@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -29,10 +29,16 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const router = useRouter();
-  const { setAuth } = useAuthStore();
+  const { isAuthenticated, setAuth } = useAuthStore();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { t } = useI18n();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, router]);
 
   const {
     register,
