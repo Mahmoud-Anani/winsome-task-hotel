@@ -1,8 +1,12 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { CreateBookingDto } from './dto/create-booking.dto';
-import { UpdateBookingStatusDto } from './dto/update-booking-status.dto';
-import { BookingStatus } from '@prisma/client';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { CreateBookingDto } from "./dto/create-booking.dto";
+import { UpdateBookingStatusDto } from "./dto/update-booking-status.dto";
+import { BookingStatus } from "@prisma/client";
 
 @Injectable()
 export class BookingsService {
@@ -15,11 +19,13 @@ export class BookingsService {
     const checkOutDate = new Date(checkOut);
 
     if (checkInDate >= checkOutDate) {
-      throw new BadRequestException('Check-out date must be after check-in date');
+      throw new BadRequestException(
+        "Check-out date must be after check-in date",
+      );
     }
 
     if (checkInDate < new Date()) {
-      throw new BadRequestException('Check-in date cannot be in the past');
+      throw new BadRequestException("Check-in date cannot be in the past");
     }
 
     const room = await this.prisma.room.findUnique({
@@ -27,17 +33,17 @@ export class BookingsService {
     });
 
     if (!room) {
-      throw new NotFoundException('Room not found');
+      throw new NotFoundException("Room not found");
     }
 
     if (room.capacity < guestCount) {
-      throw new BadRequestException('Room capacity exceeded');
+      throw new BadRequestException("Room capacity exceeded");
     }
 
     const conflictingBookings = await this.prisma.booking.findMany({
       where: {
         roomId,
-        status: { in: ['PENDING', 'CONFIRMED'] },
+        status: { in: ["PENDING", "CONFIRMED"] },
         OR: [
           {
             checkIn: { lt: checkOutDate },
@@ -48,10 +54,12 @@ export class BookingsService {
     });
 
     if (conflictingBookings.length >= room.availableRoomsCount) {
-      throw new BadRequestException('No available rooms for selected dates');
+      throw new BadRequestException("No available rooms for selected dates");
     }
 
-    const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
+    const nights = Math.ceil(
+      (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24),
+    );
     const totalPrice = room.pricePerNight * nights;
 
     return this.prisma.$transaction(async (tx) => {
@@ -75,7 +83,7 @@ export class BookingsService {
   async findAll(userId: string, userRole: string, status?: string) {
     const where: any = {};
 
-    if (userRole !== 'ADMIN') {
+    if (userRole !== "ADMIN") {
       where.userId = userId;
     }
 
@@ -96,7 +104,7 @@ export class BookingsService {
           select: { id: true, roomType: true, capacity: true },
         },
       },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -116,25 +124,36 @@ export class BookingsService {
       },
     });
     if (!booking) {
-      throw new NotFoundException('Booking not found');
+      throw new NotFoundException("Booking not found");
     }
     return booking;
   }
 
-  async updateStatus(id: string, updateStatusDto: UpdateBookingStatusDto, userId: string, userRole: string) {
+  async updateStatus(
+    id: string,
+    updateStatusDto: UpdateBookingStatusDto,
+    userId: string,
+    userRole: string,
+  ) {
     const booking = await this.findOne(id);
 
-    if (userRole !== 'ADMIN' && booking.userId !== userId) {
-      throw new BadRequestException('You can only update your own bookings');
+    if (userRole !== "ADMIN" && booking.userId !== userId) {
+      throw new BadRequestException("You can only update your own bookings");
     }
 
-    if (userRole !== 'ADMIN' && updateStatusDto.status === BookingStatus.CANCELLED) {
+    if (
+      userRole !== "ADMIN" &&
+      updateStatusDto.status === BookingStatus.CANCELLED
+    ) {
       const checkInDate = new Date(booking.checkIn);
       const now = new Date();
-      const hoursUntilCheckIn = (checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+      const hoursUntilCheckIn =
+        (checkInDate.getTime() - now.getTime()) / (1000 * 60 * 60);
 
       if (hoursUntilCheckIn < 24) {
-        throw new BadRequestException('Cannot cancel booking less than 24 hours before check-in');
+        throw new BadRequestException(
+          "Cannot cancel booking less than 24 hours before check-in",
+        );
       }
     }
 
@@ -142,5 +161,56 @@ export class BookingsService {
       where: { id },
       data: { status: updateStatusDto.status },
     });
+  }
+
+  async simulatePayment(bookingId: string, userId: string, userRole: string) {
+    const booking = await this.findOne(bookingId);
+
+    if (userRole !== "ADMIN" && booking.userId !== userId) {
+      throw new BadRequestException("You can only pay for your own bookings");
+    }
+
+    if (booking.status === BookingStatus.CANCELLED) {
+      throw new BadRequestException("Cannot pay for a cancelled booking");
+    }
+
+    if (booking.status === BookingStatus.CONFIRMED) {
+      return {
+        success: true,
+        bookingId: booking.id,
+        amount: booking.totalPrice,
+        transactionId: `SIM-${booking.id.slice(0, 8).toUpperCase()}`,
+        status: "ALREADY_CONFIRMED",
+        message: "Booking is already confirmed.",
+      };
+    }
+
+    const paymentSucceeded = Math.random() >= 0.25;
+    const transactionId = `SIM-${booking.id.slice(0, 8).toUpperCase()}-${Date.now()}`;
+
+    if (!paymentSucceeded) {
+      return {
+        success: false,
+        bookingId: booking.id,
+        amount: booking.totalPrice,
+        transactionId,
+        status: "FAILED",
+        message: "Payment simulation failed. Please try again.",
+      };
+    }
+
+    const updatedBooking = await this.prisma.booking.update({
+      where: { id: booking.id },
+      data: { status: BookingStatus.CONFIRMED },
+    });
+
+    return {
+      success: true,
+      bookingId: updatedBooking.id,
+      amount: updatedBooking.totalPrice,
+      transactionId,
+      status: "SUCCESS",
+      message: "Payment simulated successfully. Booking confirmed.",
+    };
   }
 }

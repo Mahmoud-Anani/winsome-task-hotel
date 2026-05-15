@@ -36,10 +36,14 @@ export default function BookingsPage() {
     }
   }, [isAuthenticated, router]);
 
-  const { data: allBookings = [], isLoading, refetch } = useQuery<any[]>({
+  const {
+    data: allBookings = [],
+    isLoading,
+    refetch,
+  } = useQuery<any[]>({
     queryKey: ["bookings", statusFilter],
     queryFn: async () => {
-      const res = await bookingsApi.getAll(statusFilter || undefined) as any;
+      const res = (await bookingsApi.getAll(statusFilter || undefined)) as any;
       return res.data || [];
     },
     enabled: true,
@@ -66,6 +70,13 @@ export default function BookingsPage() {
       id: string;
       status: "PENDING" | "CONFIRMED" | "CANCELLED";
     }) => bookingsApi.updateStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+    },
+  });
+
+  const payMutation = useMutation({
+    mutationFn: (id: string) => bookingsApi.pay(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
     },
@@ -213,6 +224,17 @@ export default function BookingsPage() {
                     )}
                   </div>
                   <div className="flex gap-2 w-full lg:w-auto justify-end">
+                    {booking.status === "PENDING" &&
+                      (user?.role === "ADMIN" ||
+                        booking.user?.id === user?.id) && (
+                        <Button
+                          size="sm"
+                          onClick={() => payMutation.mutate(booking.id)}
+                          disabled={payMutation.isPending}
+                        >
+                          {t("bookings.pay")}
+                        </Button>
+                      )}
                     {user?.role === "ADMIN" && (
                       <>
                         {booking.status === "PENDING" && (

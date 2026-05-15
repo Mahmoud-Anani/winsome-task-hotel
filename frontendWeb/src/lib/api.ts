@@ -168,8 +168,28 @@ export const bookingsApi = {
       client: heyApiClient,
       credentials: "include",
     }),
+  pay: async (id: string) => {
+    const response = await fetch(`${API_URL}/bookings/${id}/pay`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(
+        data?.message || `Payment simulation failed: ${response.status}`,
+      );
+    }
+
+    return data;
+  },
 };
 
 export const dashboardApi = {
-  getStats: () => dashboardControllerGetStats({ client: heyApiClient }),
+  getStats: () =>
+    dashboardControllerGetStats({
+      client: heyApiClient,
+      credentials: "include",
+    }),
 };

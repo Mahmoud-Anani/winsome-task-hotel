@@ -56,7 +56,26 @@ export function CreateBookingModal({ onClose }: { onClose: () => void }) {
   });
 
   const selectedHotelId = watch("hotelId");
+  const selectedRoomId = watch("roomId");
+  const selectedRoom = rooms.find((room) => room.id === selectedRoomId);
+  const checkIn = watch("checkIn");
+  const checkOut = watch("checkOut");
   const apiUrl = getApiBaseUrl();
+
+  const estimatedNights =
+    selectedRoom && checkIn && checkOut
+      ? Math.max(
+          0,
+          Math.ceil(
+            (new Date(checkOut).getTime() - new Date(checkIn).getTime()) /
+              (1000 * 60 * 60 * 24),
+          ),
+        )
+      : 0;
+  const estimatedTotal = selectedRoom
+    ? selectedRoom.pricePerNight * estimatedNights
+    : 0;
+  const showEstimate = selectedRoom && estimatedNights > 0;
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -157,7 +176,35 @@ export function CreateBookingModal({ onClose }: { onClose: () => void }) {
         throw new Error(`Booking create failed: ${response.status} ${body}`);
       }
 
-      await response.json();
+      const booking = await response.json();
+      console.log("CreateBookingModal: booking created", booking);
+
+      const paymentResponse = await fetch(
+        `${apiUrl}/bookings/${booking.id}/pay`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        },
+      );
+
+      const paymentResult = await paymentResponse.json();
+      console.log(
+        "CreateBookingModal: payment simulation result",
+        paymentResult,
+      );
+
+      if (!paymentResponse.ok) {
+        throw new Error(
+          paymentResult?.message ||
+            `Payment simulation failed: ${paymentResponse.status}`,
+        );
+      }
+
+      if (!paymentResult.success) {
+        throw new Error(paymentResult?.message || "Payment simulation failed");
+      }
+
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
       queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
       onClose();
@@ -236,6 +283,19 @@ export function CreateBookingModal({ onClose }: { onClose: () => void }) {
                 </p>
               )}
             </div>
+
+            {showEstimate && (
+              <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                <p className="font-medium">{t("bookings.payment.estimate")}</p>
+                <p>
+                  {estimatedNights} {t("bookings.nights")},{" "}
+                  {selectedRoom?.roomType}
+                </p>
+                <p className="mt-2 text-lg font-semibold">
+                  ${estimatedTotal.toFixed(2)}
+                </p>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="checkIn">{t("dashboard.checkIn")}</Label>
