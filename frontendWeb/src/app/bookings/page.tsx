@@ -34,15 +34,23 @@ export default function BookingsPage() {
     }
   }, [isAuthenticated, router]);
 
-  const { data: bookings = [], isLoading } = useQuery<any[]>({
+  const { data: bookings = [], isLoading, refetch } = useQuery<any[]>({
     queryKey: ["bookings", statusFilter],
     queryFn: async () => {
-      const res = await bookingsApi.getAll(statusFilter || undefined);
-      return res.data as any[];
+      console.log("Fetching bookings...");
+      const res = await bookingsApi.getAll(statusFilter || undefined) as any;
+      console.log("Bookings response:", res);
+      return res.data || [];
     },
-    enabled: isAuthenticated,
-    initialData: [],
+    enabled: true,
   });
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("Authenticated, refetching bookings");
+      refetch();
+    }
+  }, [isAuthenticated, refetch]);
 
   const updateStatusMutation = useMutation({
     mutationFn: ({
