@@ -132,7 +132,7 @@ export default function RoomsPage() {
 
       {(!rooms || rooms.length === 0) && !isLoading && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No rooms found</p>
+          <p className="text-muted-foreground">{t('rooms.noRooms')}</p>
         </div>
       )}
 
@@ -147,6 +147,7 @@ export default function RoomsPage() {
 }
 
 function CreateRoomModal({ hotels, onClose }: { hotels: any[]; onClose: () => void }) {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -174,19 +175,19 @@ function CreateRoomModal({ hotels, onClose }: { hotels: any[]; onClose: () => vo
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Add New Room</CardTitle>
+          <CardTitle>{t('rooms.create.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Hotel</label>
+              <label className="text-sm font-medium">{t('rooms.hotel')}</label>
               <select
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={formData.hotelId}
                 onChange={(e) => setFormData({ ...formData, hotelId: e.target.value })}
                 required
               >
-                <option value="">Select a hotel</option>
+                <option value="">{t('rooms.selectHotel')}</option>
                 {hotels.map((hotel: any) => (
                   <option key={hotel.id} value={hotel.id}>
                     {hotel.name}
@@ -195,50 +196,51 @@ function CreateRoomModal({ hotels, onClose }: { hotels: any[]; onClose: () => vo
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium">Room Type</label>
+              <label className="text-sm font-medium">{t('rooms.roomType')}</label>
               <Input
-                placeholder="e.g., Deluxe Suite"
+                placeholder={t('rooms.roomTypePlaceholder')}
                 value={formData.roomType}
                 onChange={(e) => setFormData({ ...formData, roomType: e.target.value })}
                 required
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Capacity</label>
+              <label className="text-sm font-medium">{t('rooms.capacity')}</label>
               <Input
                 type="number"
                 min="1"
                 value={formData.capacity}
-                onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) || 0 })}
                 required
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Price per Night</label>
+              <label className="text-sm font-medium">{t('rooms.pricePerNight')}</label>
               <Input
                 type="number"
                 min="0"
+                step="0.01"
                 value={formData.pricePerNight}
-                onChange={(e) => setFormData({ ...formData, pricePerNight: parseFloat(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, pricePerNight: parseFloat(e.target.value) || 0 })}
                 required
               />
             </div>
             <div>
-              <label className="text-sm font-medium">Available Rooms</label>
+              <label className="text-sm font-medium">{t('rooms.availableRooms')}</label>
               <Input
                 type="number"
                 min="0"
                 value={formData.availableRoomsCount}
-                onChange={(e) => setFormData({ ...formData, availableRoomsCount: parseInt(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, availableRoomsCount: parseInt(e.target.value) || 0 })}
                 required
               />
             </div>
             <div className="flex gap-2 pt-4">
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? 'Creating...' : 'Create'}
+                {createMutation.isPending ? t('rooms.creating') : t('rooms.create')}
               </Button>
               <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
+                {t('rooms.cancel')}
               </Button>
             </div>
           </form>
