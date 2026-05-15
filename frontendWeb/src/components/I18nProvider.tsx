@@ -138,6 +138,11 @@ const translations: Record<Locale, Record<string, string>> = {
     "rooms.creating": "Creating...",
     "rooms.create": "Create",
     "rooms.cancel": "Cancel",
+    "validation.hotelRequired": "Please select a hotel",
+    "validation.roomTypeMin": "Room type must be at least 2 characters",
+    "validation.capacityMin": "Capacity must be at least 1",
+    "validation.priceMin": "Price must be 0 or greater",
+    "validation.availableMin": "Available rooms must be 0 or greater",
   },
   ar: {
     "nav.home": "الرئيسية",
@@ -254,6 +259,11 @@ const translations: Record<Locale, Record<string, string>> = {
     "rooms.creating": "جاري الإنشاء...",
     "rooms.create": "إنشاء",
     "rooms.cancel": "إلغاء",
+    "validation.hotelRequired": "يرجى اختيار فندق",
+    "validation.roomTypeMin": "يجب أن يكون نوع الغرفة حرفين على الأقل",
+    "validation.capacityMin": "يجب أن تكون السعة 1 أو أكثر",
+    "validation.priceMin": "يجب أن يكون السعر 0 أو أكثر",
+    "validation.availableMin": "يجب أن تكون الغرف المتاحة 0 أو أكثر",
   },
 };
 

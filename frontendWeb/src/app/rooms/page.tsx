@@ -2,16 +2,29 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Select } from '@/components/ui/select';
 import { roomsApi, hotelsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useI18n } from '@/components/I18nProvider';
 import { Plus, Users, DollarSign, DoorOpen } from 'lucide-react';
+
+const createRoomSchema = z.object({
+  hotelId: z.string().min(1, 'hotelRequired'),
+  roomType: z.string().min(2, 'roomTypeMin'),
+  capacity: z.number().min(1, 'capacityMin'),
+  pricePerNight: z.number().min(0, 'priceMin'),
+  availableRoomsCount: z.number().min(0, 'availableMin'),
+});
+
+type CreateRoomForm = z.infer<typeof createRoomSchema>;
 
 export default function RoomsPage() {
   const router = useRouter();
@@ -149,27 +162,29 @@ export default function RoomsPage() {
 function CreateRoomModal({ hotels, onClose }: { hotels: any[]; onClose: () => void }) {
   const { t } = useI18n();
   const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    hotelId: '',
-    roomType: '',
-    capacity: 1,
-    pricePerNight: 0,
-    availableRoomsCount: 1,
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateRoomForm>({
+    resolver: zodResolver(createRoomSchema),
+    defaultValues: {
+      hotelId: '',
+      roomType: '',
+      capacity: 1,
+      pricePerNight: 0,
+      availableRoomsCount: 1,
+    },
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: typeof formData) => roomsApi.create(data),
+    mutationFn: (data: CreateRoomForm) => roomsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rooms'] });
       onClose();
     },
   });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createMutation.mutate(formData);
-  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -178,14 +193,13 @@ function CreateRoomModal({ hotels, onClose }: { hotels: any[]; onClose: () => vo
           <CardTitle>{t('rooms.create.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">{t('rooms.hotel')}</label>
+          <form onSubmit={handleSubmit((data) => createMutation.mutate(data))} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="hotelId">{t('rooms.hotel')}</Label>
               <select
+                id="hotelId"
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                value={formData.hotelId}
-                onChange={(e) => setFormData({ ...formData, hotelId: e.target.value })}
-                required
+                {...register('hotelId')}
               >
                 <option value="">{t('rooms.selectHotel')}</option>
                 {hotels.map((hotel: any) => (
@@ -194,46 +208,47 @@ function CreateRoomModal({ hotels, onClose }: { hotels: any[]; onClose: () => vo
                   </option>
                 ))}
               </select>
+              {errors.hotelId && <p className="text-sm text-destructive">{t(`validation.${errors.hotelId.message}`)}</p>}
             </div>
-            <div>
-              <label className="text-sm font-medium">{t('rooms.roomType')}</label>
+            <div className="space-y-2">
+              <Label htmlFor="roomType">{t('rooms.roomType')}</Label>
               <Input
+                id="roomType"
                 placeholder={t('rooms.roomTypePlaceholder')}
-                value={formData.roomType}
-                onChange={(e) => setFormData({ ...formData, roomType: e.target.value })}
-                required
+                {...register('roomType')}
               />
+              {errors.roomType && <p className="text-sm text-destructive">{t(`validation.${errors.roomType.message}`)}</p>}
             </div>
-            <div>
-              <label className="text-sm font-medium">{t('rooms.capacity')}</label>
+            <div className="space-y-2">
+              <Label htmlFor="capacity">{t('rooms.capacity')}</Label>
               <Input
+                id="capacity"
                 type="number"
                 min="1"
-                value={formData.capacity}
-                onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) || 0 })}
-                required
+                {...register('capacity', { valueAsNumber: true })}
               />
+              {errors.capacity && <p className="text-sm text-destructive">{t(`validation.${errors.capacity.message}`)}</p>}
             </div>
-            <div>
-              <label className="text-sm font-medium">{t('rooms.pricePerNight')}</label>
+            <div className="space-y-2">
+              <Label htmlFor="pricePerNight">{t('rooms.pricePerNight')}</Label>
               <Input
+                id="pricePerNight"
                 type="number"
                 min="0"
                 step="0.01"
-                value={formData.pricePerNight}
-                onChange={(e) => setFormData({ ...formData, pricePerNight: parseFloat(e.target.value) || 0 })}
-                required
+                {...register('pricePerNight', { valueAsNumber: true })}
               />
+              {errors.pricePerNight && <p className="text-sm text-destructive">{t(`validation.${errors.pricePerNight.message}`)}</p>}
             </div>
-            <div>
-              <label className="text-sm font-medium">{t('rooms.availableRooms')}</label>
+            <div className="space-y-2">
+              <Label htmlFor="availableRoomsCount">{t('rooms.availableRooms')}</Label>
               <Input
+                id="availableRoomsCount"
                 type="number"
                 min="0"
-                value={formData.availableRoomsCount}
-                onChange={(e) => setFormData({ ...formData, availableRoomsCount: parseInt(e.target.value) || 0 })}
-                required
+                {...register('availableRoomsCount', { valueAsNumber: true })}
               />
+              {errors.availableRoomsCount && <p className="text-sm text-destructive">{t(`validation.${errors.availableRoomsCount.message}`)}</p>}
             </div>
             <div className="flex gap-2 pt-4">
               <Button type="submit" disabled={createMutation.isPending}>
