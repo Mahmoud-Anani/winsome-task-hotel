@@ -3,19 +3,35 @@
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { hotelsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useI18n } from '@/components/I18nProvider';
 import { Plus, Search, Star, MapPin, Edit, Trash2 } from 'lucide-react';
+
+const createHotelSchema = z.object({
+  name: z.string().min(2, 'hotelNameMin'),
+  city: z.string().min(2, 'cityMin'),
+  address: z.string().min(5, 'addressMin'),
+  stars: z.number().min(1).max(5, 'starsRange'),
+  status: z.enum(['ACTIVE', 'INACTIVE']),
+});
+
+type CreateHotelForm = z.infer<typeof createHotelSchema>;
 
 export default function HotelsPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { isAuthenticated, user } = useAuthStore();
+  const { t } = useI18n();
   const [search, setSearch] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -43,11 +59,11 @@ export default function HotelsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Hotels</h1>
+        <h1 className="text-3xl font-bold">{t('hotels.title')}</h1>
         {(user?.role === 'ADMIN' || user?.role === 'HOTEL_MANAGER') && (
           <Button onClick={() => setShowCreateModal(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Add Hotel
+            {t('hotels.addHotel')}
           </Button>
         )}
       </div>
@@ -56,7 +72,7 @@ export default function HotelsPage() {
         <div className="relative">
           <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search hotels by name or city..."
+            placeholder={t('hotels.searchPlaceholder')}
             className="pl-10"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -101,7 +117,7 @@ export default function HotelsPage() {
                   </div>
                   <div className="flex justify-between items-center pt-4">
                     <span className="text-sm text-muted-foreground">
-                      {hotel._count?.bookings || 0} bookings
+                      {hotel._count?.bookings || 0} {t('hotels.bookings')}
                     </span>
                     <div className="flex gap-2">
                       <Button
@@ -109,7 +125,7 @@ export default function HotelsPage() {
                         size="sm"
                         onClick={() => router.push(`/hotels/${hotel.id}`)}
                       >
-                        View
+                        {t('hotels.view')}
                       </Button>
                       {(user?.role === 'ADMIN' || user?.role === 'HOTEL_MANAGER') && (
                         <Button
@@ -132,7 +148,7 @@ export default function HotelsPage() {
 
       {(!hotelsData?.data || hotelsData.data.length === 0) && !isLoading && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No hotels found</p>
+          <p className="text-muted-foreground">{t('hotels.noHotels')}</p>
         </div>
       )}
 
@@ -144,78 +160,73 @@ export default function HotelsPage() {
 }
 
 function CreateHotelModal({ onClose }: { onClose: () => void }) {
+  const { t } = useI18n();
   const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    city: '',
-    address: '',
-    stars: 3,
-    status: 'ACTIVE',
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CreateHotelForm>({
+    resolver: zodResolver(createHotelSchema),
+    defaultValues: {
+      name: '',
+      city: '',
+      address: '',
+      stars: 3,
+      status: 'ACTIVE',
+    },
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: typeof formData) => hotelsApi.create(data),
+    mutationFn: (data: CreateHotelForm) => hotelsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['hotels'] });
       onClose();
     },
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createMutation.mutate(formData);
-  };
-
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Add New Hotel</CardTitle>
+          <CardTitle>{t('hotels.create.title')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Hotel Name</label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
-              />
+          <form onSubmit={handleSubmit((data) => createMutation.mutate(data))} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">{t('hotels.name')}</Label>
+              <Input id="name" {...register('name')} />
+              {errors.name && <p className="text-sm text-destructive">{t(`validation.${errors.name.message}`)}</p>}
             </div>
-            <div>
-              <label className="text-sm font-medium">City</label>
-              <Input
-                value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                required
-              />
+            <div className="space-y-2">
+              <Label htmlFor="city">{t('hotels.city')}</Label>
+              <Input id="city" {...register('city')} />
+              {errors.city && <p className="text-sm text-destructive">{t(`validation.${errors.city.message}`)}</p>}
             </div>
-            <div>
-              <label className="text-sm font-medium">Address</label>
-              <Input
-                value={formData.address}
-                onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                required
-              />
+            <div className="space-y-2">
+              <Label htmlFor="address">{t('hotels.address')}</Label>
+              <Input id="address" {...register('address')} />
+              {errors.address && <p className="text-sm text-destructive">{t(`validation.${errors.address.message}`)}</p>}
             </div>
-            <div>
-              <label className="text-sm font-medium">Stars</label>
-              <Input
-                type="number"
-                min="1"
-                max="5"
-                value={formData.stars}
-                onChange={(e) => setFormData({ ...formData, stars: parseInt(e.target.value) })}
-                required
-              />
+            <div className="space-y-2">
+              <Label htmlFor="stars">{t('hotels.stars')}</Label>
+              <Input id="stars" type="number" min="1" max="5" {...register('stars', { valueAsNumber: true })} />
+              {errors.stars && <p className="text-sm text-destructive">{t(`validation.${errors.stars.message}`)}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="status">{t('hotels.status')}</Label>
+              <select id="status" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm" {...register('status')}>
+                <option value="ACTIVE">{t('hotels.active')}</option>
+                <option value="INACTIVE">{t('hotels.inactive')}</option>
+              </select>
             </div>
             <div className="flex gap-2 pt-4">
               <Button type="submit" disabled={createMutation.isPending}>
-                {createMutation.isPending ? 'Creating...' : 'Create'}
+                {createMutation.isPending ? t('hotels.creating') : t('hotels.create')}
               </Button>
               <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
+                {t('hotels.cancel')}
               </Button>
             </div>
           </form>

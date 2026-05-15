@@ -76,15 +76,36 @@ export const authApi = {
 
 export const hotelsApi = {
   getAll: (params?: { search?: string; page?: number; limit?: number }) =>
-    hotelsControllerFindAll({ query: params, client: heyApiClient }),
+    hotelsControllerFindAll({
+      query: params,
+      client: heyApiClient,
+      credentials: "include",
+    }),
   getById: (id: string) =>
-    hotelsControllerFindOne({ path: { id }, client: heyApiClient }),
+    hotelsControllerFindOne({
+      path: { id },
+      client: heyApiClient,
+      credentials: "include",
+    }),
   create: (data: CreateHotelDto) =>
-    hotelsControllerCreate({ body: data, client: heyApiClient }),
+    hotelsControllerCreate({
+      body: data,
+      client: heyApiClient,
+      credentials: "include",
+    }),
   update: (id: string, data: Partial<UpdateHotelDto>) =>
-    hotelsControllerUpdate({ path: { id }, body: data, client: heyApiClient }),
+    hotelsControllerUpdate({
+      path: { id },
+      body: data,
+      client: heyApiClient,
+      credentials: "include",
+    }),
   delete: (id: string) =>
-    hotelsControllerRemove({ path: { id }, client: heyApiClient }),
+    hotelsControllerRemove({
+      path: { id },
+      client: heyApiClient,
+      credentials: "include",
+    }),
 };
 
 export const roomsApi = {
