@@ -3,10 +3,14 @@ import { Prisma, Hotel } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateHotelDto } from './dto/create-hotel.dto';
 import { UpdateHotelDto } from './dto/update-hotel.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class HotelsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService,
+  ) {}
 
   async create(createHotelDto: CreateHotelDto, userId: string) {
     return this.prisma.hotel.create({
@@ -84,10 +88,22 @@ export class HotelsService {
       throw new ForbiddenException('You can only update your own hotels');
     }
 
-    return this.prisma.hotel.update({
+    const updatedHotel = await this.prisma.hotel.update({
       where: { id },
       data: updateHotelDto,
     });
+
+    await this.mailService.sendHotelUpdatedNotification({
+      to: hotel.createdByUser.email,
+      recipientName: hotel.createdByUser.name,
+      hotelName: updatedHotel.name,
+      city: updatedHotel.city,
+      address: updatedHotel.address,
+      stars: updatedHotel.stars,
+      status: updatedHotel.status,
+    });
+
+    return updatedHotel;
   }
 
   async remove(id: string, userId: string, userRole: string) {
@@ -98,6 +114,17 @@ export class HotelsService {
     }
 
     await this.prisma.hotel.delete({ where: { id } });
+
+    await this.mailService.sendHotelDeletedNotification({
+      to: hotel.createdByUser.email,
+      recipientName: hotel.createdByUser.name,
+      hotelName: hotel.name,
+      city: hotel.city,
+      address: hotel.address,
+      stars: hotel.stars,
+      status: hotel.status,
+    });
+
     return { message: 'Hotel deleted successfully' };
   }
 

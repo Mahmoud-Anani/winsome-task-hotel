@@ -53,12 +53,22 @@ export function LoginForm() {
     setError("");
     try {
       const response = await authApi.login(data) as any;
-      const { user } = response.data;
-      console.log(user);
+      console.log("Login response:", response);
+      
+      const user = response.data?.user || response.user;
+      const token = response.data?.token || response.token;
+      
+      if (token) {
+        document.cookie = `auth_token=${token}; path=/; max-age=2592000; SameSite=Lax`;
+      }
+      
+      const locale = response.data?.locale || response.locale || 'ar';
+      document.cookie = `locale=${locale}; path=/; max-age=2592000`;
 
       setAuth(user);
       router.replace("/dashboard");
     } catch (err: any) {
+      console.error("Login error:", err);
       setError(err.response?.data?.message || t("auth.loginFailed"));
     } finally {
       setLoading(false);

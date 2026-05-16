@@ -2,10 +2,14 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class RoomsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private mailService: MailService,
+  ) {}
 
   async create(createRoomDto: CreateRoomDto) {
     const hotel = await this.prisma.hotel.findUnique({
@@ -57,17 +61,73 @@ export class RoomsService {
   }
 
   async update(id: string, updateRoomDto: UpdateRoomDto) {
-    await this.findOne(id);
+    const room = await this.prisma.room.findUnique({
+      where: { id },
+      include: {
+        hotel: {
+          select: {
+            name: true,
+            createdByUser: {
+              select: { name: true, email: true },
+            },
+          },
+        },
+      },
+    });
 
-    return this.prisma.room.update({
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+
+    const updatedRoom = await this.prisma.room.update({
       where: { id },
       data: updateRoomDto,
     });
+
+    await this.mailService.sendRoomUpdatedNotification({
+      to: room.hotel.createdByUser.email,
+      recipientName: room.hotel.createdByUser.name,
+      hotelName: room.hotel.name,
+      roomType: updatedRoom.roomType,
+      capacity: updatedRoom.capacity,
+      pricePerNight: updatedRoom.pricePerNight,
+      availableRoomsCount: updatedRoom.availableRoomsCount,
+    });
+
+    return updatedRoom;
   }
 
   async remove(id: string) {
-    await this.findOne(id);
+    const room = await this.prisma.room.findUnique({
+      where: { id },
+      include: {
+        hotel: {
+          select: {
+            name: true,
+            createdByUser: {
+              select: { name: true, email: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!room) {
+      throw new NotFoundException('Room not found');
+    }
+
     await this.prisma.room.delete({ where: { id } });
+
+    await this.mailService.sendRoomDeletedNotification({
+      to: room.hotel.createdByUser.email,
+      recipientName: room.hotel.createdByUser.name,
+      hotelName: room.hotel.name,
+      roomType: room.roomType,
+      capacity: room.capacity,
+      pricePerNight: room.pricePerNight,
+      availableRoomsCount: room.availableRoomsCount,
+    });
+
     return { message: 'Room deleted successfully' };
   }
 
