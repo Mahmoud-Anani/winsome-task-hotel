@@ -35,7 +35,8 @@ export function Navbar() {
   const { locale, setLocale, t } = useI18n();
   const { theme, toggleTheme } = useTheme();
   const userDropdownRef = useRef<HTMLDivElement>(null);
-  const moreDropdownRef = useRef<HTMLDivElement>(null);
+  const desktopMoreDropdownRef = useRef<HTMLDivElement>(null);
+  const tabletMoreDropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = async () => {
     try {
@@ -79,8 +80,8 @@ export function Navbar() {
         setUserDropdownOpen(false);
       }
       if (
-        moreDropdownRef.current &&
-        !moreDropdownRef.current.contains(event.target as Node)
+        !desktopMoreDropdownRef.current?.contains(event.target as Node) &&
+        !tabletMoreDropdownRef.current?.contains(event.target as Node)
       ) {
         setMoreDropdownOpen(false);
       }
@@ -168,7 +169,7 @@ export function Navbar() {
               ))}
 
               {/* More Dropdown */}
-              <div className="relative" ref={moreDropdownRef}>
+              <div className="relative" ref={desktopMoreDropdownRef}>
                 <button
                   onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
                   className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-2 rounded-md transition-colors"
@@ -180,13 +181,13 @@ export function Navbar() {
                   />
                 </button>
                 <div
-                  className={`absolute rigth-0 top-full mt-1 w-48 bg-background border rounded-lg shadow-lg py-2 transition-all duration-200 origin-top-right ${moreDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
+                  className={`absolute right-0 top-full mt-1 w-48 bg-background border rounded-lg shadow-lg py-2 transition-all duration-200 origin-top-right ${moreDropdownOpen ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
                 >
                   {moreLinks.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      // onClick={() => setMoreDropdownOpen(false)}
+                      onClick={() => setMoreDropdownOpen(false)}
                       className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
                         pathname === link.href
                           ? "text-primary bg-primary/10"
@@ -219,7 +220,7 @@ export function Navbar() {
                   </span>
                 </Link>
               ))}
-              <div className="relative" ref={moreDropdownRef}>
+              <div className="relative" ref={tabletMoreDropdownRef}>
                 <button
                   onClick={() => setMoreDropdownOpen(!moreDropdownOpen)}
                   className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-2 py-2 rounded-md transition-colors"
