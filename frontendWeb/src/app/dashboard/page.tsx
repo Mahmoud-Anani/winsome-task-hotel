@@ -32,7 +32,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      router.push('/login');
+      router.replace('/login');
     }
   }, [isAuthenticated, router]);
 
@@ -48,7 +48,7 @@ export default function DashboardPage() {
         return null;
       }
     },
-    enabled: true,
+    enabled: isAuthenticated,
   });
 
   useEffect(() => {

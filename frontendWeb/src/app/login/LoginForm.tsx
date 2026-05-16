@@ -36,7 +36,7 @@ export function LoginForm() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/dashboard");
+      router.replace("/dashboard");
     }
   }, [isAuthenticated, router]);
 
@@ -57,7 +57,7 @@ export function LoginForm() {
       console.log(user);
 
       setAuth(user);
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (err: any) {
       setError(err.response?.data?.message || t("auth.loginFailed"));
     } finally {

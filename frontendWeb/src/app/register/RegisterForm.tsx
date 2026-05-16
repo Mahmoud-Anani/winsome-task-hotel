@@ -38,7 +38,7 @@ export function RegisterForm() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push("/dashboard");
+      router.replace("/dashboard");
     }
   }, [isAuthenticated, router]);
 
@@ -57,7 +57,7 @@ export function RegisterForm() {
       const response = await authApi.register(data) as any;
       const { user } = response.data;
       setAuth(user);
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (err: any) {
       setError(err.response?.data?.message || t("auth.registerFailed"));
     } finally {
