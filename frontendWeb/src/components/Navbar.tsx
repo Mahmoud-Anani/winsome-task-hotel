@@ -186,7 +186,7 @@ export function Navbar() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      onClick={() => setMoreDropdownOpen(false)}
+                      // onClick={() => setMoreDropdownOpen(false)}
                       className={`flex items-center gap-3 px-4 py-2.5 text-sm transition-colors ${
                         pathname === link.href
                           ? "text-primary bg-primary/10"
