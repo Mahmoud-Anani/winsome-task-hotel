@@ -100,7 +100,7 @@ export default function HomePage() {
   const testimonials = [
     {
       name: "Ahmed Al-Rashid",
-      text: "Amazing experience! The staff was incredibly friendly and the rooms were spotless.",
+      text: "Amazing experience! The staff was incredibly friendly and the rooms were.",
       rating: 5,
     },
     {
