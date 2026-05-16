@@ -10,7 +10,9 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "ts-node -r tsconfig-paths/register prisma/seed.ts",
-    "test": "jest"
+    "test": "jest --runInBand",
+    "test:unit": "jest --config ./jest.config.js --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand"
   },
   "keywords": [],
   "author": "",
@@ -41,8 +43,14 @@
     "uuid": "^14.0.0"
   },
   "devDependencies": {
+    "@nestjs/testing": "^11.1.21",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
+    "@types/supertest": "^6.0.3",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4",
     "ts-node": "^10.9.2",
+    "ts-jest": "^29.4.5",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.0.0"
   }

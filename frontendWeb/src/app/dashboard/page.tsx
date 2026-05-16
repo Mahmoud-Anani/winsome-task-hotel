@@ -23,6 +23,13 @@ import {
   LineChart,
   Line,
   Legend,
+  AreaChart,
+  Area,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
 } from 'recharts';
 
 export default function DashboardPage() {
@@ -63,22 +70,61 @@ export default function DashboardPage() {
     { name: t('bookings.cancelled'), value: stats?.cancelledBookings || 0, color: '#ef4444' },
   ];
 
-  const revenueData = stats?.recentBookings?.map((booking: any, index: number) => ({
-    name: `Booking ${index + 1}`,
-    revenue: booking.totalPrice,
-    hotel: booking.hotel?.name || 'Hotel',
+  const hotelBookingsData = stats?.hotels?.map((hotel: any) => ({
+    name: hotel.name?.substring(0, 15) || 'Hotel',
+    bookings: hotel._count?.bookings || 0,
+    rooms: hotel._count?.rooms || 0,
   })) || [];
 
-  const monthlyData = [
-    { month: t('dashboard.jan'), bookings: 12, revenue: 2400 },
-    { month: t('dashboard.feb'), bookings: 19, revenue: 3800 },
-    { month: t('dashboard.mar'), bookings: 15, revenue: 3000 },
-    { month: t('dashboard.apr'), bookings: 25, revenue: 5000 },
-    { month: t('dashboard.may'), bookings: 32, revenue: 6400 },
-    { month: t('dashboard.jun'), bookings: 28, revenue: 5600 },
+  const revenueByMonth = [
+    { month: 'Jan', revenue: 12400, bookings: 45 },
+    { month: 'Feb', revenue: 15800, bookings: 52 },
+    { month: 'Mar', revenue: 18200, bookings: 61 },
+    { month: 'Apr', revenue: 14500, bookings: 48 },
+    { month: 'May', revenue: 21000, bookings: 72 },
+    { month: 'Jun', revenue: 19500, bookings: 68 },
+    { month: 'Jul', revenue: 22500, bookings: 78 },
+    { month: 'Aug', revenue: 24800, bookings: 85 },
+    { month: 'Sep', revenue: 18900, bookings: 65 },
+    { month: 'Oct', revenue: 16500, bookings: 56 },
+    { month: 'Nov', revenue: 14200, bookings: 49 },
+    { month: 'Dec', revenue: 19800, bookings: 70 },
   ];
 
-  const COLORS = ['#22c55e', '#eab308', '#ef4444'];
+  const roomTypeData = [
+    { name: 'Standard', value: 35, color: '#3b82f6' },
+    { name: 'Deluxe', value: 28, color: '#8b5cf6' },
+    { name: 'Suite', value: 20, color: '#ec4899' },
+    { name: 'Premium', value: 12, color: '#f59e0b' },
+    { name: 'Family', value: 5, color: '#10b981' },
+  ];
+
+  const weeklyTrend = [
+    { day: 'Mon', bookings: 12, revenue: 2400 },
+    { day: 'Tue', bookings: 15, revenue: 3200 },
+    { day: 'Wed', bookings: 18, revenue: 3800 },
+    { day: 'Thu', bookings: 14, revenue: 2900 },
+    { day: 'Fri', bookings: 22, revenue: 4800 },
+    { day: 'Sat', bookings: 28, revenue: 6200 },
+    { day: 'Sun', bookings: 25, revenue: 5400 },
+  ];
+
+  const performanceMetrics = [
+    { metric: 'Revenue', value: 85, fullMark: 100 },
+    { metric: 'Bookings', value: 72, fullMark: 100 },
+    { metric: 'Occupancy', value: 68, fullMark: 100 },
+    { metric: 'Satisfaction', value: 92, fullMark: 100 },
+    { metric: 'Reviews', value: 78, fullMark: 100 },
+    { metric: 'Returns', value: 65, fullMark: 100 },
+  ];
+
+  const monthlyData = revenueByMonth.slice(0, 6).map(item => ({
+    month: item.month,
+    bookings: item.bookings,
+    revenue: item.revenue,
+  }));
+
+  const COLORS = ['#22c55e', '#eab308', '#ef4444', '#3b82f6', '#8b5cf6'];
 
   if (!isAuthenticated) return null;
 
@@ -206,6 +252,36 @@ export default function DashboardPage() {
 
             <Card>
               <CardHeader>
+                <CardTitle className="text-lg">Room Types Distribution</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={roomTypeData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={90}
+                        paddingAngle={3}
+                        dataKey="value"
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {roomTypeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle className="text-lg">{t('dashboard.monthlyOverview')}</CardTitle>
               </CardHeader>
               <CardContent>
@@ -225,32 +301,88 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            <Card className="lg:col-span-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Weekly Booking Trend</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={weeklyTrend}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="day" fontSize={12} />
+                      <YAxis fontSize={12} />
+                      <Tooltip />
+                      <Legend />
+                      <Area type="monotone" dataKey="bookings" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
+                      <Area type="monotone" dataKey="revenue" stroke="#22c55e" fill="#22c55e" fillOpacity={0.3} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
               <CardHeader>
                 <CardTitle className="text-lg">{t('dashboard.revenueTrend')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={monthlyData}>
+                    <LineChart data={revenueByMonth}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="month" fontSize={12} />
                       <YAxis fontSize={12} />
                       <Tooltip />
                       <Legend />
-                      <Line
-                        type="monotone"
-                        dataKey="revenue"
-                        stroke="#22c55e"
-                        strokeWidth={2}
-                        dot={{ r: 4 }}
-                        name={t('dashboard.revenue')}
-                      />
+                      <Line type="monotone" dataKey="revenue" stroke="#22c55e" strokeWidth={2} dot={{ r: 4 }} name="Revenue ($)" />
+                      <Line type="monotone" dataKey="bookings" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 4 }} name="Bookings" />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Performance Metrics</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <RadarChart data={performanceMetrics}>
+                      <PolarGrid />
+                      <PolarAngleAxis dataKey="metric" fontSize={12} />
+                      <PolarRadiusAxis angle={30} domain={[0, 100]} />
+                      <Radar name="Performance" dataKey="value" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.3} />
+                    </RadarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+
+            {hotelBookingsData.length > 0 && (
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-lg">Bookings by Hotel</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={hotelBookingsData} layout="vertical">
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" fontSize={12} />
+                        <YAxis dataKey="name" type="category" fontSize={12} width={100} />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="bookings" fill="#3b82f6" name="Bookings" radius={[0, 4, 4, 0]} />
+                        <Bar dataKey="rooms" fill="#22c55e" name="Rooms" radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </>
       )}
